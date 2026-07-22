@@ -86,13 +86,19 @@
   .end p{font-size:18px;line-height:1.5;max-width:52ch;margin:0 auto 8px}
   .scorecard{max-width:440px;margin:16px auto 4px;text-align:left}
   .sc-title{font-family:'Gaegu';font-weight:700;font-size:15px;color:#777;text-align:center;margin:20px 0 8px}
-  .sc-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border:2.5px solid var(--ink);border-radius:11px;margin-bottom:9px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
-  .sc-row .sc-pill{font-family:'Gaegu';font-weight:700;font-size:15px;width:86px;flex:0 0 auto}
-  .sc-row .sc-you{font-family:'Gaegu';font-weight:700;font-size:15px;flex:1}
+  .sc-row{padding:11px 14px 13px;border:2.5px solid var(--ink);border-radius:11px;margin-bottom:9px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
+  .sc-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+  .sc-top .sc-pill{font-family:'Gaegu';font-weight:700;font-size:15px}
+  .sc-top .sc-you{font-family:'Gaegu';font-weight:700;font-size:15px}
   .sc-row.good .sc-you{color:var(--green)}
   .sc-row.bad .sc-you{color:var(--amber)}
-  .sc-row .sc-crowd{font-family:'Kalam';font-size:13px;color:#666;flex:0 0 auto;text-align:right;white-space:nowrap}
-  .sc-row .sc-crowd.dim{color:#b9c0c9}
+  .sc-barrow{display:flex;align-items:center;gap:10px}
+  .sc-barwrap{flex:1;height:16px;border:2px solid var(--ink);border-radius:7px;overflow:hidden;background:#fff}
+  .sc-bar{height:100%;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .sc-row.good .sc-bar{background:var(--green)}
+  .sc-row.bad .sc-bar{background:var(--amber)}
+  .sc-crowd{font-family:'Kalam';font-size:13px;color:#666;white-space:nowrap;min-width:92px;text-align:right}
+  .sc-crowd.dim{color:#b9c0c9}
   .end .endmood{font-family:'Gaegu';font-weight:700;font-size:16px;margin-top:12px}
   .end .row{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
   .copied{font-family:'Gaegu';font-weight:700;color:var(--green);height:18px;margin-top:12px;font-size:15px}
@@ -819,14 +825,17 @@ function showEnd(){
     const word = r.mature ? r.good : r.bad;
     const hasData = r.live && r.n>=3;
     if(hasData){ withData++; if(r.samePct>=50) majority++; }
-    const crowd = hasData
-      ? '<span class="sc-crowd">'+r.samePct+'% chose this</span>'
-      : '<span class="sc-crowd dim">gathering data</span>';
+    const pct = hasData ? r.samePct : 0;
+    const crowd = hasData ? (r.samePct+'% chose this') : 'gathering data';
     const row=document.createElement('div');
     row.className='sc-row '+(r.mature?'good':'bad');
-    row.innerHTML='<span class="sc-pill">'+p+'</span><span class="sc-you">'+word+'</span>'+crowd;
+    row.innerHTML=
+      '<div class="sc-top"><span class="sc-pill">'+p+'</span><span class="sc-you">'+word+'</span></div>'+
+      '<div class="sc-barrow"><div class="sc-barwrap"><div class="sc-bar" data-w="'+pct+'"></div></div>'+
+      '<span class="sc-crowd'+(hasData?'':' dim')+'">'+crowd+'</span></div>';
     sc.appendChild(row);
   });
+  requestAnimationFrame(()=>{ sc.querySelectorAll('.sc-bar').forEach(b=>b.style.width=b.dataset.w+'%'); });
   const scTitle=document.querySelector('.sc-title');
   if(scTitle){
     scTitle.textContent = withData>0
