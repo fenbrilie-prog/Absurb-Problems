@@ -62,17 +62,17 @@
   .outcome{display:none}
   .outcome.on{display:block}
   .outcome .verdict{font-size:20px;line-height:1.45;text-align:center;margin-bottom:14px}
-  .peerline{text-align:left;font-family:'Gaegu';font-weight:700;font-size:16px;margin:0 auto 12px;max-width:460px;color:var(--ink)}
-  .peerline .live{font-family:'Kalam';font-weight:400;font-size:12px;color:#999;margin-left:7px}
+  .peerline{text-align:left;font-family:'Gaegu';font-weight:700;font-size:16px;margin:0 auto 20px;max-width:460px;color:var(--ink)}
+  .peerline .live{font-family:'Kalam';font-weight:400;font-size:12px;color:#999;display:block;margin-top:4px}
   .bars{max-width:460px;margin:0 auto}
-  .bars .bar-row{margin-bottom:14px}
+  .bars .bar-row{margin-bottom:20px}
   .bars .bar-top{display:flex;align-items:center;gap:10px}
   .bars .barwrap{flex:1;height:20px;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
   .bars .fill{height:100%;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1);background:#cfd6df}
   .bars .bar-row.mine .fill{background:var(--blue)}
   .bars .bar-pct{font-family:'Gaegu';font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
   .youmark{font-family:'Gaegu';font-weight:700;font-size:13px;color:var(--blue);white-space:nowrap}
-  .bars .bar-stmt{font-family:'Kalam';font-size:14px;color:#555;margin-top:5px;line-height:1.35}
+  .bars .bar-stmt{font-family:'Kalam';font-size:14px;color:#555;margin-top:7px;line-height:1.4}
   .bars .bar-row.mine .bar-stmt{color:var(--ink);font-weight:700}
 
   .next{display:block;margin:20px auto 0;font-family:'Gaegu';font-weight:700;font-size:20px;background:var(--ink);color:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:13px 30px;cursor:pointer;box-shadow:3px 3px 0 #999;transition:transform .08s}
@@ -86,13 +86,13 @@
   .end p{font-size:18px;line-height:1.5;max-width:52ch;margin:0 auto 8px}
   .scorecard{max-width:440px;margin:16px auto 4px;text-align:left}
   .sc-title{font-family:'Gaegu';font-weight:700;font-size:15px;color:#777;text-align:center;margin:20px 0 8px}
-  .sc-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2.5px solid var(--ink);border-radius:11px;margin-bottom:8px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
-  .sc-row .pill{font-family:'Gaegu';font-weight:700;font-size:15px;width:90px;flex:0 0 auto}
-  .sc-row .axis{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:wrap;font-size:14px;text-align:right}
-  .sc-row .pole{color:#b9c0c9}
-  .sc-row .pole.on-high{color:var(--green);font-weight:700}
-  .sc-row .pole.on-low{color:var(--amber);font-weight:700}
-  .sc-row .arr{color:#c4cad2;font-weight:700}
+  .sc-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border:2.5px solid var(--ink);border-radius:11px;margin-bottom:9px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
+  .sc-row .sc-pill{font-family:'Gaegu';font-weight:700;font-size:15px;width:86px;flex:0 0 auto}
+  .sc-row .sc-you{font-family:'Gaegu';font-weight:700;font-size:15px;flex:1}
+  .sc-row.good .sc-you{color:var(--green)}
+  .sc-row.bad .sc-you{color:var(--amber)}
+  .sc-row .sc-crowd{font-family:'Kalam';font-size:13px;color:#666;flex:0 0 auto;text-align:right;white-space:nowrap}
+  .sc-row .sc-crowd.dim{color:#b9c0c9}
   .end .endmood{font-family:'Gaegu';font-weight:700;font-size:16px;margin-top:12px}
   .end .row{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
   .copied{font-family:'Gaegu';font-weight:700;color:var(--green);height:18px;margin-top:12px;font-size:15px}
@@ -664,7 +664,7 @@ function renderLevel(){
     const btn=document.createElement('button');
     btn.className='choice';
     btn.innerHTML='<span class="opt-ic">'+iconSvg(icon)+'</span>'+
-                  '<span class="opt-tx">'+opt.label+'<small>'+opt.sub+'</small></span>';
+                  '<span class="opt-tx">'+opt.label+'</span>';
     btn.addEventListener('click',()=>choose(key));
     choicesEl.appendChild(btn);
   });
@@ -697,7 +697,7 @@ function pcts(L, live){
 
 function buildBars(L, key, live){
   const p=pcts(L,live);
-  const lowSample = p.live && p.n < 8;
+  const lowSample = p.live && p.n < 3;
   const head=document.getElementById('peerline');
   if(lowSample){
     head.innerHTML='You&rsquo;re one of the first to answer this<span class="live">real percentages appear as more teams play</span>';
@@ -724,13 +724,20 @@ function buildBars(L, key, live){
   if(!lowSample) requestAnimationFrame(()=>{ barsEl.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%'); });
 }
 
+function recordCompare(pillar, key, live){
+  const L=LEVELS.find(x=>x.pillar===pillar); if(!L) return;
+  const p=pcts(L,live);
+  const r=pillarResult[pillar];
+  if(r){ r.samePct = key==='a'?p.a:p.b; r.n=p.n; r.live=p.live; }
+}
+
 function choose(key){
   if(chosen) return; chosen=true;
   const L=LEVELS[idx], opt=L[key];
   const isPull = key==='a';
   energy=Math.max(0,Math.min(10,energy+opt.de));
   if(opt.right) judgment++;
-  pillarResult[L.pillar]={mature:!!opt.mature, good:L.good, bad:L.bad};
+  pillarResult[L.pillar]={mature:!!opt.mature, good:L.good, bad:L.bad, key:key, samePct:(key==='a'?L.a.pct:L.b.pct), n:0, live:false};
 
   // 1. flip lever + roll the trolley down the chosen track
   const lever=document.getElementById('lever');
@@ -758,7 +765,7 @@ function choose(key){
     choicesEl.style.display='none';
     verdictEl.innerHTML=opt.verdict;
     buildBars(L,key,null);                       // seeds first, instantly
-    votePromise.then(live=>{ if(live && chosen) buildBars(L,key,live); }); // real numbers when they arrive
+    votePromise.then(live=>{ if(live && chosen) buildBars(L,key,live); recordCompare(L.pillar,key,live); }); // real numbers when they arrive
     outcomeEl.classList.add('on');
     document.getElementById('nextBtn').textContent = (idx===LEVELS.length-1)?'See the damage →':'Next →';
   };
@@ -804,18 +811,28 @@ function showEnd(){
   document.getElementById('endTitle').textContent=title;
   document.getElementById('endBlurb').innerHTML=blurb;
 
-  // scorecard: where the team sits on each pillar's maturity axis
+  // at-a-glance: how the player answered vs everyone else
   const sc=document.getElementById('scorecard'); sc.innerHTML='';
+  let majority=0, withData=0;
   ORDER.forEach(p=>{
     const r=pillarResult[p]; if(!r) return;
+    const word = r.mature ? r.good : r.bad;
+    const hasData = r.live && r.n>=3;
+    if(hasData){ withData++; if(r.samePct>=50) majority++; }
+    const crowd = hasData
+      ? '<span class="sc-crowd">'+r.samePct+'% chose this</span>'
+      : '<span class="sc-crowd dim">gathering data</span>';
     const row=document.createElement('div');
     row.className='sc-row '+(r.mature?'good':'bad');
-    const low ='<span class="pole '+(r.mature?'dim':'on-low')+'">'+r.bad+'</span>';
-    const high='<span class="pole '+(r.mature?'on-high':'dim')+'">'+r.good+'</span>';
-    row.innerHTML='<span class="pill">'+p+'</span>'+
-      '<span class="axis">'+low+'<span class="arr">\u2192</span>'+high+'</span>';
+    row.innerHTML='<span class="sc-pill">'+p+'</span><span class="sc-you">'+word+'</span>'+crowd;
     sc.appendChild(row);
   });
+  const scTitle=document.querySelector('.sc-title');
+  if(scTitle){
+    scTitle.textContent = withData>0
+      ? 'You answered like the majority on '+majority+' of '+withData+(withData===1?' pillar':' pillars')
+      : 'How you answered, and how you compare';
+  }
 
   const ml=document.getElementById('endMoodLine');
   ml.innerHTML='Your lawyer finished the year <span style="color:'+MOOD_COLORS[energy]+'">'+MOODS[energy]+'</span> &middot; '+mature+'/5 pillars running like they should.';
