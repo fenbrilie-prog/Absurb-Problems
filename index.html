@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absurd Legal Team Problems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f4ea; --ink:#1a1a1a; --red:#e5462f; --green:#1f9d5b; --amber:#e08a1e;
+    --blue:#2f6bff; --line:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Kalam',cursive}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:22px 18px 50px}
+  .app{width:100%;max-width:760px}
+
+  .head{text-align:center;margin-bottom:6px}
+  .head h1{font-family:'Gaegu';font-weight:700;font-size:clamp(30px,6vw,46px);line-height:1}
+  .head .lvl{font-family:'Gaegu';font-weight:700;font-size:16px;color:#555;margin-top:2px}
+  .head .subtitle{font-family:'Kalam';font-size:15px;color:#777;margin-top:4px}
+  .restart{margin:8px 4px 0;font-family:'Gaegu';font-weight:700;font-size:14px;background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:5px 14px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .08s}
+  .sound-icon{position:fixed;top:14px;right:16px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:#b3b8c0;cursor:pointer;padding:4px;opacity:.7;transition:opacity .15s,color .15s;z-index:30}
+  .sound-icon:hover{opacity:1;color:var(--ink)}
+  .restart:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
+
+  /* energy chip */
+  .energy{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 14px;font-family:'Gaegu';font-weight:700;font-size:15px}
+  .energy .track{width:150px;height:14px;border:2.5px solid var(--ink);border-radius:10px;overflow:hidden;background:#fff}
+  .energy .track > span{display:block;height:100%;transition:width .5s ease,background .5s ease}
+
+  /* scene */
+  .scene{background:#fffdf5;border:3px solid var(--ink);border-radius:18px;padding:6px 6px 0;position:relative;overflow:hidden}
+  .scene svg{display:block;width:100%;height:auto}
+
+  /* prompt */
+  .question{font-family:'Gaegu';font-weight:700;font-size:clamp(21px,3.8vw,28px);line-height:1.18;text-align:center;margin:18px 6px 6px}
+  .prompt{font-size:clamp(16px,2.9vw,19px);line-height:1.45;margin:0 8px 16px;text-align:center;color:#555}
+  .prompt b{color:var(--ink);font-weight:700}
+
+  /* choices */
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .choice{display:flex;align-items:center;gap:12px;text-align:left;font-family:'Gaegu';font-weight:700;font-size:16px;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:14px 15px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s ease,box-shadow .08s ease;line-height:1.2}
+  .choice:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .choice:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .choice .opt-ic{flex:0 0 auto;width:40px;height:40px}
+  .choice .opt-ic svg{width:40px;height:40px;display:block}
+  .choice .opt-tx{flex:1;min-width:0}
+  .choice small{display:block;font-family:'Kalam';font-weight:400;font-size:13px;color:#888;margin-top:3px}
+
+  /* outcome */
+  .outcome{display:none}
+  .outcome.on{display:block}
+  .outcome .verdict{font-size:20px;line-height:1.45;text-align:center;margin-bottom:14px}
+  .peerline{text-align:center;font-family:'Gaegu';font-weight:700;font-size:18px;margin-bottom:14px;min-height:24px}
+  .peerline b{font-size:22px}
+  .peerline .live{font-family:'Kalam';font-weight:400;font-size:12px;color:#999;display:block;margin-top:1px}
+  .bars .bar-row{margin-bottom:10px}
+  .bars .lab{display:flex;justify-content:space-between;font-family:'Gaegu';font-weight:700;font-size:15px;margin-bottom:3px}
+  .bars .barwrap{height:22px;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
+  .bars .fill{height:100%;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1);background:#dcdcdc}
+  .bars .bar-row.mine .fill{background:var(--blue)}
+  .bars .bar-row.mine .lab{color:var(--blue)}
+  .youchip{font-family:'Gaegu';font-weight:700;font-size:12px;color:#fff;background:var(--blue);border-radius:20px;padding:1px 8px;margin-left:6px}
+
+  .next{display:block;margin:20px auto 0;font-family:'Gaegu';font-weight:700;font-size:20px;background:var(--ink);color:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:13px 30px;cursor:pointer;box-shadow:3px 3px 0 #999;transition:transform .08s}
+  .next:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #999}
+
+  /* end */
+  .end{display:none;text-align:center}
+  .end.on{display:block}
+  .end .archetype-lab{font-family:'Gaegu';font-weight:700;font-size:15px;color:#777;margin-top:6px}
+  .end h2{font-family:'Gaegu';font-weight:700;font-size:clamp(26px,5vw,38px);line-height:1.05;margin:2px 0 10px}
+  .end p{font-size:18px;line-height:1.5;max-width:52ch;margin:0 auto 8px}
+  .scorecard{max-width:440px;margin:16px auto 4px;text-align:left}
+  .sc-title{font-family:'Gaegu';font-weight:700;font-size:15px;color:#777;text-align:center;margin:20px 0 8px}
+  .sc-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border:2.5px solid var(--ink);border-radius:11px;margin-bottom:8px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
+  .sc-row .pill{font-family:'Gaegu';font-weight:700;font-size:15px;width:90px;flex:0 0 auto}
+  .sc-row .axis{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end;flex-wrap:wrap;font-size:14px;text-align:right}
+  .sc-row .pole{color:#b9c0c9}
+  .sc-row .pole.on-high{color:var(--green);font-weight:700}
+  .sc-row .pole.on-low{color:var(--amber);font-weight:700}
+  .sc-row .arr{color:#c4cad2;font-weight:700}
+  .end .endmood{font-family:'Gaegu';font-weight:700;font-size:16px;margin-top:12px}
+  .end .row{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  .copied{font-family:'Gaegu';font-weight:700;color:var(--green);height:18px;margin-top:12px;font-size:15px}
+  .credit{margin-top:26px;text-align:center;font-family:'Kalam';font-size:11px;color:#9aa2ad;line-height:1.4}
+  .credit a{color:#9aa2ad}
+
+  /* CTA + HubSpot form, styled to match the doodle look */
+  .cta{max-width:440px;margin:24px auto 8px;text-align:center;border-top:2.5px dashed var(--line);padding-top:22px}
+  .cta-head{font-family:'Gaegu';font-weight:700;font-size:clamp(20px,4vw,26px);line-height:1.15;margin-bottom:6px}
+  .cta-sub{font-size:15px;line-height:1.5;color:#555;margin:0 auto 16px;max-width:40ch}
+  .cta-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;margin:0 auto}
+  .cta-primary,.cta-secondary{font-family:'Gaegu';font-weight:700;font-size:17px;cursor:pointer;border:2.5px solid var(--ink);border-radius:12px;padding:13px 10px;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s;line-height:1.15}
+  .cta-primary{background:var(--blue);color:#fff}
+  .cta-secondary{background:#fff;color:var(--ink)}
+  .cta-primary:hover,.cta-secondary:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .cta-primary:active,.cta-secondary:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+
+  /* popup modal */
+  .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,18,10,.6)}
+  .modal.on{display:flex}
+  .modal-card{position:relative;background:#fffdf5;border:3px solid var(--ink);border-radius:20px;box-shadow:6px 6px 0 var(--ink);max-width:460px;width:100%;max-height:90vh;overflow:auto;padding:30px 26px 26px;text-align:center;animation:rise .3s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  .modal-close{position:absolute;top:8px;right:12px;background:none;border:none;font-family:'Gaegu';font-weight:700;font-size:30px;line-height:1;color:#888;cursor:pointer;padding:2px 6px}
+  .modal-close:hover{color:var(--ink)}
+  .modal-head{font-family:'Gaegu';font-weight:700;font-size:24px;line-height:1.1;margin-bottom:6px}
+  .modal-sub{font-size:14px;line-height:1.45;color:#666;margin:0 auto 16px;max-width:36ch}
+  .modal-result{background:#fff8ea;border:2.5px solid #eccf94;border-radius:14px;box-shadow:2px 2px 0 #eccf94;padding:12px 14px;margin:2px 0 16px;text-align:left}
+  .mr-label{font-family:'Kalam';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#b58a3a}
+  .mr-arch{font-family:'Gaegu';font-weight:700;font-size:21px;color:var(--ink);line-height:1.05;margin:1px 0 8px}
+  .mr-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .rchip{font-family:'Kalam';font-size:12px;background:#fff;border:1.5px solid var(--amber);color:#8a5a12;border-radius:20px;padding:3px 10px}
+  .rchip.good{border-color:var(--green);color:#1f7a4d}
+
+  .hsform-wrap{max-width:440px;margin:0 auto;text-align:left}
+  .cta-fallback{display:inline-block;font-family:'Gaegu';font-weight:700;font-size:17px;background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:12px 22px;text-decoration:none;box-shadow:3px 3px 0 var(--ink)}
+  .hs-loading{display:block;text-align:center;font-family:'Kalam';font-size:14px;color:#aab;padding:14px 0}
+  .hsform-wrap form{display:flex;flex-direction:column;gap:12px}
+  .hsform-wrap fieldset{max-width:none!important;width:100%}
+  .hsform-wrap .hs-form-field{margin:0}
+  .hsform-wrap .hs-form-field > label{display:block;font-family:'Gaegu';font-weight:700;font-size:15px;margin-bottom:5px;color:var(--ink)}
+  .hsform-wrap .hs-form-required{color:var(--red)}
+  .hsform-wrap input.hs-input,.hsform-wrap select.hs-input,.hsform-wrap textarea.hs-input{
+    width:100%;font-family:'Kalam',cursive;font-size:16px;padding:11px 13px;background:#fff;color:var(--ink);
+    border:2.5px solid var(--ink);border-radius:11px;box-shadow:2px 2px 0 rgba(26,26,26,.15);outline:none}
+  .hsform-wrap input.hs-input:focus,.hsform-wrap select.hs-input:focus,.hsform-wrap textarea.hs-input:focus{
+    border-color:var(--blue);box-shadow:2px 2px 0 rgba(47,107,255,.28)}
+  .hsform-wrap .hs-input::placeholder{color:#aaa}
+  .hsform-wrap ul.hs-error-msgs{list-style:none;margin:4px 0 0;padding:0}
+  .hsform-wrap .hs-error-msg,.hsform-wrap label.hs-error-msg{color:var(--red);font-family:'Kalam';font-size:13px}
+  .hsform-wrap .hs-button,.hsform-wrap input[type=submit].hs-button{
+    display:block;width:100%;cursor:pointer;font-family:'Gaegu';font-weight:700;font-size:19px;margin-top:4px;
+    background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:13px;
+    box-shadow:3px 3px 0 var(--ink);transition:transform .08s}
+  .hsform-wrap .hs-button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .hsform-wrap .hs-button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .hsform-wrap .legal-consent-container,.hsform-wrap .hs-richtext{font-family:'Kalam';font-size:12px;color:#888;line-height:1.4}
+
+  /* character animations */
+  .figure{transform-box:fill-box;transform-origin:50% 100%}
+  .figure.bob{animation:bob 2.4s ease-in-out infinite}
+  .figure.wobble{animation:wobble 1.3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes wobble{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .drip,.drip2{transform-box:fill-box;transform-origin:50% 0}
+  .drip{animation:drip 1.6s ease-in infinite}
+  .drip2{animation:drip 1.6s ease-in .8s infinite}
+  @keyframes drip{0%{transform:translateY(-2px);opacity:0}25%{opacity:1}100%{transform:translateY(14px);opacity:0}}
+  .figure.excited{animation:excited .9s ease-in-out infinite}
+  .figure.buzz{animation:buzz .16s linear infinite}
+  .figure.droop{animation:droop 2.8s ease-in-out infinite}
+  .figure.teeter{animation:teeter 2.6s ease-in-out infinite}
+  .figure.collapse{animation:collapse 3.6s ease-in-out infinite}
+  @keyframes excited{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes buzz{0%{transform:translate(0,0)}20%{transform:translate(-1.5px,1px) rotate(-.8deg)}40%{transform:translate(1.5px,-1px) rotate(.8deg)}60%{transform:translate(-1px,-1px)}80%{transform:translate(1px,1px) rotate(-.4deg)}100%{transform:translate(0,0)}}
+  @keyframes droop{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+  @keyframes teeter{0%,100%{transform:rotate(-1.5deg) translateY(0)}45%{transform:rotate(2.6deg) translateY(1px)}72%{transform:rotate(-1deg) translateY(3px)}}
+  @keyframes collapse{0%,38%,100%{transform:translateY(0) rotate(0)}54%{transform:translateY(8px) rotate(2.5deg)}68%{transform:translateY(11px) rotate(3.5deg)}84%{transform:translateY(4px) rotate(1deg)}}
+  .shake-lines{transform-box:fill-box;animation:flick .1s steps(1) infinite}
+  @keyframes flick{0%{opacity:.7}50%{opacity:.18}100%{opacity:.7}}
+  .drip3{transform-box:fill-box;transform-origin:50% 0;animation:drip 1.6s ease-in 1.2s infinite}
+  .glow{transform-box:fill-box;transform-origin:50% 100%;animation:glowpulse 1.4s ease-in-out infinite}
+  @keyframes glowpulse{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:1;transform:scale(1.05)}}
+  .gear{transform-box:fill-box;transform-origin:50% 50%;animation:spin 3.2s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .ghost{transform-box:fill-box;transform-origin:50% 100%;animation:ghostfloat 3.4s ease-in-out infinite}
+  @keyframes ghostfloat{0%{transform:translateY(4px);opacity:.5}50%{transform:translateY(-6px);opacity:1}100%{transform:translateY(-14px);opacity:.35}}
+  .eyes.blink{transform-box:fill-box;transform-origin:50% 50%;animation:blink 4.5s infinite}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+  .shake-cup{transform-box:fill-box;transform-origin:50% 100%;animation:cupshake .16s linear infinite}
+  @keyframes cupshake{0%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}100%{transform:rotate(-6deg)}}
+  .sparkle{transform-box:fill-box;transform-origin:50% 50%;animation:twinkle 1.6s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:.3;transform:scale(.7)}50%{opacity:1;transform:scale(1.1)}}
+  .steam{transform-box:fill-box;transform-origin:50% 100%;animation:steamrise 2.4s ease-in-out infinite}
+  @keyframes steamrise{0%{opacity:.15;transform:translateY(2px)}50%{opacity:.55}100%{opacity:.15;transform:translateY(-3px)}}
+
+  /* action animations */
+  .lever{transform-box:fill-box;transform-origin:0 100%;transition:transform .4s cubic-bezier(.34,1.56,.5,1)}
+  .lever.pull{transform:rotate(-34deg)}
+  .lever.nothing{transform:rotate(30deg)}
+  .cart{transform-box:fill-box}
+  .cart.route-self{animation:routeSelf 1.05s cubic-bezier(.3,.55,.35,1) forwards}
+  .cart.route-desk{animation:routeDesk 1.05s cubic-bezier(.3,.55,.35,1) forwards}
+  @keyframes routeSelf{0%{transform:translate(0,0)}42%{transform:translate(170px,4px)}100%{transform:translate(377px,66px) rotate(7deg)}}
+  @keyframes routeDesk{0%{transform:translate(0,0)}42%{transform:translate(170px,4px)}100%{transform:translate(378px,-140px) rotate(-9deg)}}
+  .react{transform-box:fill-box;transform-origin:50% 50%;opacity:0}
+  .react.show{animation:pop .55s ease forwards}
+  @keyframes pop{0%{opacity:0;transform:scale(.2) rotate(-8deg)}60%{opacity:1;transform:scale(1.18) rotate(4deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+  .scene.shake{animation:shakeScene .42s ease}
+  @keyframes shakeScene{0%,100%{transform:translate(0,0)}20%{transform:translate(-5px,2px)}60%{transform:translate(5px,-2px)}}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(max-width:520px){.choices{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<audio id="bgm" src="monkeys-spinning-monkeys.mp3" loop preload="auto"></audio>
+<div class="app">
+<button id="soundBtn" class="sound-icon" aria-label="Toggle sound"></button>
+  <div class="head">
+    <h1>Absurd Legal Team Problems</h1>
+    <div class="subtitle" id="subtitle">Five decisions. Find out how your legal team really runs.</div>
+    <div class="lvl" id="lvl"><b>Intake</b> · 1 of 5</div>
+    <button class="restart" id="restartBtn">↻ Start over</button>
+  </div>
+
+  <div class="energy">
+    <span id="moodWord">Coping fine</span>
+    <span class="track"><span id="energyFill"></span></span>
+  </div>
+
+  <div class="scene" id="scene"></div>
+
+  <div id="play">
+    <div class="question" id="question"></div>
+    <div class="prompt" id="prompt"></div>
+    <div class="choices" id="choices"></div>
+    <div class="outcome" id="outcome">
+      <div class="verdict" id="verdict"></div>
+      <div class="peerline" id="peerline"></div>
+      <div class="bars" id="bars"></div>
+      <button class="next" id="nextBtn">Next →</button>
+    </div>
+  </div>
+
+  <div class="end" id="end">
+    <div class="archetype-lab">Your legal team runs like&hellip;</div>
+    <h2 id="endTitle"></h2>
+    <p id="endBlurb"></p>
+    <p class="sc-title">Where your team sits on the legal-ops maturity curve</p>
+    <div class="scorecard" id="scorecard"></div>
+    <p class="endmood" id="endMoodLine"></p>
+
+    <div class="cta">
+      <h3 class="cta-head" id="ctaHead">Running on vibes? Let&rsquo;s fix that.</h3>
+      <p class="cta-sub">See how Checkbox gives your team structured intake, smarter triage, automation and clear visibility.</p>
+      <div class="cta-actions">
+        <button class="cta-primary" id="ctaOpen">See how Checkbox works</button>
+        <button class="cta-secondary" id="againBtn">Play again</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  <div class="credit">Music: &ldquo;Monkeys Spinning Monkeys&rdquo; by Kevin MacLeod &middot; <a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a> &middot; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+</div>
+
+<div class="modal" id="formModal">
+  <div class="modal-card">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-result">
+      <span class="mr-label">Your result</span>
+      <div class="mr-arch" id="modalArch"></div>
+      <div class="mr-chips" id="modalChips"></div>
+    </div>
+    <h4 class="modal-head" id="modalHead">See how Checkbox closes your gaps</h4>
+    <p class="modal-sub" id="modalSub">Based on your answers, Checkbox targets exactly where you&rsquo;re still reactive. Drop your details and grab a walkthrough.</p>
+    <div id="hubspotForm" class="hsform-wrap"><span class="hs-loading">loading&hellip;</span></div>
+  </div>
+</div>
+
+<script>
+/* ---------- state ---------- */
+let energy = 5;          // 0 = cocktail mode … 10 = a husk in a blazer; start mid-scale
+let judgment = 0;        // correct routing calls
+let idx = 0;
+let chosen = false;
+const reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+/* ---------- audio: original synth SFX + a CC-BY background loop (credited at foot) ---------- */
+let AC=null, master=null, soundOn=true, audioStarted=false, ambTimer=null, padNodes=null, ambStep=0;
+const PENT=[261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25]; // C major pentatonic - always consonant
+const ARP=[0,2,4,3,5,4,2,1];
+
+function initAudio(){
+  if(AC) return;
+  try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ AC=null; return; }
+  master=AC.createGain(); master.gain.value=0.16; master.connect(AC.destination);
+}
+function pluck(freq,{type='triangle',dur=0.18,peak=0.12,detune=0}={}){
+  if(!AC||!soundOn) return;
+  const o=AC.createOscillator(), g=AC.createGain(), t0=AC.currentTime;
+  o.type=type; o.frequency.value=freq; o.detune.value=detune;
+  o.connect(g); g.connect(master);
+  g.gain.setValueAtTime(0.0001,t0);
+  g.gain.linearRampToValueAtTime(peak,t0+0.005);
+  g.gain.exponentialRampToValueAtTime(0.0001,t0+dur+0.12);
+  o.start(t0); o.stop(t0+dur+0.16);
+}
+function noiseBurst({dur=0.15,peak=0.2,cut=1000}={}){
+  if(!AC||!soundOn) return;
+  const n=AC.createBufferSource(), b=AC.createBuffer(1,Math.floor(AC.sampleRate*dur),AC.sampleRate);
+  const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*(1-i/d.length);
+  n.buffer=b;
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cut;
+  const g=AC.createGain(), t0=AC.currentTime; n.connect(f); f.connect(g); g.connect(master);
+  g.gain.setValueAtTime(peak,t0); g.gain.exponentialRampToValueAtTime(0.001,t0+dur);
+  n.start(t0); n.stop(t0+dur+0.02);
+}
+// one-shot effects
+function sfxLever(){ pluck(180,{type:'square',dur:0.07,peak:0.10}); setTimeout(()=>pluck(120,{type:'square',dur:0.10,peak:0.09}),55); }
+function sfxDing(){ pluck(523.25,{dur:0.16,peak:0.14}); setTimeout(()=>pluck(659.25,{dur:0.24,peak:0.14}),95); }
+function sfxThud(){ pluck(88,{type:'sine',dur:0.20,peak:0.24}); noiseBurst({dur:0.14,peak:0.11,cut:700}); }
+function sfxAdvance(){ pluck(392,{dur:0.12,peak:0.09}); }
+function sfxReveal(){ [0,2,4,5,7].forEach((ix,i)=> setTimeout(()=>pluck(PENT[ix],{dur:0.3,peak:0.13}), i*110)); }
+// ambient bed - tempo + detune track the lawyer's burnout
+function ambTick(){
+  if(!soundOn){ ambTimer=null; return; }
+  const tension=energy/5;
+  pluck(PENT[ARP[ambStep%ARP.length]], {type:'triangle',dur:0.30,peak:0.075,detune:tension*12});
+  ambStep++;
+  ambTimer=setTimeout(ambTick, 560 - tension*230);
+}
+function startPad(){
+  if(padNodes||!AC) return;
+  const g=AC.createGain(); g.gain.value=0.0001; g.connect(master);
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=520; f.connect(g);
+  const o1=AC.createOscillator(); o1.type='sine'; o1.frequency.value=130.81;
+  const o2=AC.createOscillator(); o2.type='sine'; o2.frequency.value=196.00; o2.detune.value=6;
+  o1.connect(f); o2.connect(f); o1.start(); o2.start();
+  g.gain.linearRampToValueAtTime(0.05, AC.currentTime+1.2);
+  padNodes={o1,o2,g,f};
+}
+function stopPad(){
+  if(!padNodes) return;
+  const {o1,o2,g}=padNodes, t=AC.currentTime;
+  g.gain.linearRampToValueAtTime(0.0001,t+0.4); o1.stop(t+0.5); o2.stop(t+0.5); padNodes=null;
+}
+function startAmbient(){ if(ambTimer) return; startPad(); ambTick(); }
+function stopAmbient(){ if(ambTimer){ clearTimeout(ambTimer); ambTimer=null; } stopPad(); }
+function musicRate(){ return 1 + (energy/10)*0.14; }   // frantic-er as the lawyer fries
+const SPK_ON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path d="M16 8.5a5 5 0 0 1 0 7 M18.6 6a8 8 0 0 1 0 12"/></svg>';
+const SPK_OFF='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path d="M16 9l6 6 M22 9l-6 6"/></svg>';
+function updateSoundIcon(){ const b=document.getElementById('soundBtn'); if(b) b.innerHTML = soundOn?SPK_ON:SPK_OFF; }
+
+function startAudio(){                       // begins playback (needs a user gesture in most browsers)
+  if(audioStarted || !soundOn) return;
+  initAudio();
+  if(AC && AC.state==='suspended'){ try{ AC.resume(); }catch(e){} }
+  const bgm=document.getElementById('bgm');
+  if(bgm){
+    bgm.volume=0.32; try{ bgm.playbackRate=musicRate(); }catch(e){}
+    const p=bgm.play();
+    if(p&&p.then){ p.then(()=>{audioStarted=true;}).catch(()=>{}); } else { audioStarted=true; }
+  }
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  updateSoundIcon();
+  const bgm=document.getElementById('bgm');
+  if(soundOn){ audioStarted=false; startAudio(); }
+  else if(bgm){ bgm.pause(); }
+}
+
+const LEVELS = [
+  {
+    pillar:'Intake', good:'Structured', bad:'Reactive',
+    threat:'a new request',
+    q:'How would your team normally handle a new legal request?',
+    prompt:'',
+    a:{label:'We have a system that routes the right work to legal.', sub:'This sounds like us', de:-1, mature:true, right:true,
+       verdict:'Every request now lands in one place, tagged and tracked. The 11pm DMs stopped. You can finally see your own workload.', pct:54},
+    b:{label:'Every request comes straight to me.', sub:'This sounds more like us', de:+1, mature:false, right:false,
+       verdict:'Requests keep arriving by Slack, email, text and a Post-it on your monitor. You <i>are</i> the intake system. You are also very tired.', pct:46},
+  },
+  {
+    pillar:'Triage', good:'Risk-based', bad:'FIFO',
+    threat:'47 at once',
+    q:'With everything arriving at once, what normally happens?',
+    prompt:'',
+    a:{label:'Our system prioritises requests by risk and complexity.', sub:'This sounds like us', de:-1, mature:true, right:true,
+       verdict:'Routine work peeled off to self-serve; the acquisition went straight to your senior team. The right eyes on the right things.', pct:66},
+    b:{label:'We work through the queue as it arrives.', sub:'This sounds more like us', de:+1, mature:false, right:false,
+       verdict:'You gave the $50M deal and the dog-walker NDA precisely equal attention. Very fair. Also a great way to miss the one that mattered.', pct:34},
+  },
+  {
+    pillar:'Automation', good:'Expertise-first', bad:'Manual',
+    threat:'NDA #400',
+    q:'It\u2019s the 400th NDA this quarter\u2026',
+    prompt:'',
+    a:{label:'Routine work resolves itself unless legal expertise is needed.', sub:'This sounds like us', de:-1, mature:true, right:true,
+       verdict:'The routine 80% now runs itself. Your lawyers do lawyer things. You\u2019ve half-forgotten what an NDA even looks like.', pct:61},
+    b:{label:'A lawyer still reviews every request.', sub:'This sounds more like us', de:+1, mature:false, right:false,
+       verdict:'You are a highly-trained lawyer copy-pasting a template for the 400th time. Somewhere, your law degree quietly weeps.', pct:39},
+  },
+  {
+    pillar:'Contracts', good:'Single source of truth', bad:'Searching',
+    threat:'the signed copy?',
+    q:'Someone asks for the signed agreement\u2026',
+    prompt:'',
+    a:{label:'We know exactly where every contract lives.', sub:'This sounds like us', de:-1, mature:true, right:true,
+       verdict:'Found it in four seconds. Right version. Renewal date attached. Legal-ops people are weeping with joy.', pct:49},
+    b:{label:'We start searching.', sub:'This sounds more like us', de:+1, mature:false, right:false,
+       verdict:'You found three versions, two of them signed, none of them matching. Which one is the business actually operating under? Nobody knows, and that\u2019s exactly the problem.', pct:51},
+  },
+  {
+    pillar:'Visibility', good:'Measured', bad:'Guessing',
+    threat:'the CFO asks',
+    q:'The CFO asks what Legal achieved this quarter\u2026',
+    prompt:'',
+    a:{label:'We have the data.', sub:'This sounds like us', de:-1, mature:true, right:true,
+       verdict:'You showed cycle times, volumes and where work stalls. Legal went from \u2018cost centre\u2019 to \u2018the team with receipts.\u2019 Budget approved.', pct:43},
+    b:{label:'We piece together an answer.', sub:'This sounds more like us', de:+1, mature:false, right:false,
+       verdict:'\u2018A lot. We did a lot.\u2019 The CFO nodded slowly. Your headcount request did not survive the meeting.', pct:57},
+  },
+];
+
+const pillarResult = {};
+
+const MOODS = ['Thriving','Strategic','Efficient','Focused','In control','Coping fine','Fraying','Coffee-fuelled','Running on fumes','A husk in a blazer','Left the building'];
+const MOOD_COLORS = ['#12b76a','#1f9d5b','#3aa855','#6bbe2e','#9cc21f','#e0a11e','#e88a1a','#e5701a','#e5541f','#b8321f','#8f2718'];
+
+/* ---------- doodle character by energy state ---------- */
+/* face + prop fragments (head-relative face; body-space arms) */
+/* face parts (drawn in head-space) */
+const E_DOT='<g class="eyes blink"><circle cx="-8" cy="-4" r="2.4"/><circle cx="8" cy="-4" r="2.4"/></g>';
+const E_HAPPY='<g class="eyes blink"><path d="M-11 -2 q3 -5 6 0"/><path d="M5 -2 q3 -5 6 0"/></g>';
+const E_WIDE='<g class="eyes"><circle cx="-8" cy="-4" r="5" fill="#fff"/><circle cx="-8" cy="-4" r="1.8"/><circle cx="8" cy="-4" r="5" fill="#fff"/><circle cx="8" cy="-4" r="1.8"/></g>';
+const E_DROOPY='<g class="eyes"><path d="M-12 -3 q4 4 8 0"/><path d="M4 -3 q4 4 8 0"/></g>';
+const E_X='<g class="eyes"><path d="M-12 -7 l7 6 M-5 -7 l-7 6"/><path d="M5 -7 l7 6 M12 -7 l-7 6"/></g>';
+const M_OPEN='<path d="M-8 5 q8 11 16 0 q-8 4 -16 0 Z" fill="#fff"/>';
+const M_SMILE='<path d="M-7 6 q7 6 14 0"/>';
+const M_NEUTRAL='<path d="M-7 8 h14"/>';
+const M_FROWN='<path d="M-7 11 q7 -5 14 0"/>';
+const M_TONGUE='<path d="M-6 8 h12"/><path d="M1 9 q3 0 3 5 q-3 0 -3 -5 Z" fill="#e5462f" stroke-width="1.5"/>';
+
+/* props + arm poses (figure-space, shoulders ~ 0,-14) */
+const CUP_SIDE='<path d="M0 -14 L15 -8"/>'+
+  '<g class="cup"><rect x="13" y="-13" width="11" height="9" rx="1" fill="#fff"/><path d="M24 -11 q4 0 4 3 q0 3 -4 3" fill="none"/>'+
+  '<g class="steam"><path d="M16 -15 q-2 -4 1 -6 M21 -15 q2 -4 -1 -6" stroke-width="1.5" opacity=".5"/></g></g>';
+const CUP_RAISED='<path d="M0 -14 L11 -27"/>'+
+  '<g class="cup shake-cup"><rect x="7" y="-33" width="11" height="9" rx="1" fill="#fff"/><path d="M18 -31 q4 0 4 3 q0 3 -4 3" fill="none"/>'+
+  '<g class="steam"><path d="M10 -35 q-2 -4 1 -6 M15 -35 q2 -4 -1 -6" stroke-width="1.5" opacity=".5"/></g></g>';
+const ARMS_UP='<path d="M0 -14 L-26 -36"/><path d="M0 -14 L26 -36"/><circle cx="-26" cy="-36" r="3.2" fill="#1a1a1a"/><circle cx="26" cy="-36" r="3.2" fill="#1a1a1a"/>';
+const ARMS_HIPS='<path d="M0 -12 L-15 -6 L-4 1"/><path d="M0 -12 L15 -6 L4 1"/>';
+const ARM_ONHIP='<path d="M0 -12 L-15 -6 L-4 1"/><path d="M0 -14 L18 3"/>';
+const ARM_GESTURE='<path d="M0 -14 L-18 3"/><path d="M0 -14 L17 -19"/>';
+const GEAR='<g transform="translate(33 -30)"><g class="gear">'+
+  '<circle cx="0" cy="0" r="9" fill="#fff"/>'+
+  '<g stroke-width="4" stroke-linecap="round">'+
+    '<path d="M0 -9 V-13"/><path d="M0 9 V13"/><path d="M-9 0 H-13"/><path d="M9 0 H13"/>'+
+    '<path d="M-6.4 -6.4 L-9.2 -9.2"/><path d="M6.4 -6.4 L9.2 -9.2"/><path d="M-6.4 6.4 L-9.2 9.2"/><path d="M6.4 6.4 L9.2 9.2"/>'+
+  '</g>'+
+  '<circle cx="0" cy="0" r="3.2" fill="#fff"/>'+
+  '</g></g>';
+const ARM_CLIP='<path d="M0 -14 L-18 3"/><path d="M0 -12 L13 -6"/>'+
+  '<rect x="11" y="-17" width="16" height="20" rx="2" fill="#fff"/><rect x="16" y="-20" width="6" height="4" rx="1" fill="#fff"/>'+
+  '<path d="M14 -9 l2 2 l4 -5 M14 -2 l2 2 l4 -5" stroke="#1f9d5b" stroke-width="1.8" fill="none"/>';
+const ARM_COFFEE_SIDE='<path d="M0 -14 L-18 3"/>'+CUP_SIDE;
+const ARM_COFFEE_DROOP='<path d="M0 -11 L-15 8"/>'+CUP_SIDE;
+const ARM_COFFEE_RAISED='<path d="M0 -14 L-16 -1"/>'+CUP_RAISED;
+const ARM_LIMP='<path d="M0 -10 L-13 11"/><path d="M0 -10 L11 13"/>'+
+  '<g class="cup"><rect x="7" y="13" width="11" height="9" rx="1" fill="#fff"/><path d="M18 15 q4 0 4 3 q0 3 -4 3" fill="none"/></g>'+
+  '<path d="M12 23 q0 4 -1 7" stroke="#a5732f" stroke-width="1.6"/>';
+
+/* legs + extras */
+const LEGS_NORMAL='<path d="M0 26 L-16 60"/><path d="M0 26 L16 60"/>';
+const LEGS_WIDE='<path d="M0 26 L-19 60"/><path d="M0 26 L19 60"/>';
+const LEGS_JITTER='<path d="M0 26 L-13 45 L-17 60"/><path d="M0 26 L13 45 L17 60"/>';
+const LEGS_BUCKLE='<path d="M0 26 L-13 42 L-6 60"/><path d="M0 26 L13 42 L6 60"/>';
+const MOTION='<g class="glow" stroke="#6bbe2e" stroke-width="2.6" stroke-linecap="round">'+
+  '<path d="M-30 -64 l-8 -4"/>'+
+  '<path d="M-23 -74 l-5 -8"/>'+
+  '<path d="M-12 -81 l-3 -9"/>'+
+  '<path d="M0 -83 v-9"/>'+
+  '<path d="M12 -81 l3 -9"/>'+
+  '<path d="M23 -74 l5 -8"/>'+
+  '<path d="M30 -64 l8 -4"/>'+
+  '</g>';
+const SPARKLES='<g class="sparkle"><path d="M-30 -58 v-9 M-34.5 -62.5 h9" stroke-width="2.5"/></g>'+
+  '<g class="sparkle" style="animation-delay:.7s"><path d="M30 -54 v-7 M26.5 -57.5 h7" stroke-width="2.5"/></g>';
+const SWEAT1='<path class="drip" d="M17 -50 q3 6 0 9 q-3 -3 0 -9" fill="#8ec6ff" stroke="#3a7bd0" stroke-width="1.5"/>';
+const SWEAT2=SWEAT1+'<path class="drip2" d="M-17 -46 q3 6 0 9 q-3 -3 0 -9" fill="#8ec6ff" stroke="#3a7bd0" stroke-width="1.5"/>';
+const SWEAT3=SWEAT2+'<path class="drip3" d="M21 -42 q3 6 0 9 q-3 -3 0 -9" fill="#8ec6ff" stroke="#3a7bd0" stroke-width="1.5"/>';
+const SHAKE_LINES='<g class="shake-lines" stroke-width="2">'+
+  '<path d="M-27 44 q-4 4 0 8 M-32 46 q-4 4 0 8"/>'+
+  '<path d="M27 44 q4 4 0 8 M32 46 q4 4 0 8"/>'+
+  '<path d="M-25 -4 q-4 3 -6 7 M-30 -2 q-4 3 -6 7"/>'+
+  '</g>';
+const STEAMHEAD='<g class="steam"><path d="M-6 -72 q-5 -8 2 -13 M6 -72 q5 -8 -2 -13" stroke-width="2" opacity=".5"/></g>';
+
+/* 0 = Thriving (all mature) ... 9 = a husk (all manual). Matches the state sheet. */
+const STATE_ART=[
+  {eyes:E_DOT,   mouth:M_OPEN,    arms:ARMS_UP,             legs:LEGS_WIDE,   extras:MOTION,            lean:0,  anim:'excited'}, // 0 Thriving
+  {eyes:E_DOT,   mouth:M_SMILE,   arms:ARMS_HIPS,           legs:LEGS_WIDE,   extras:SPARKLES,          lean:0,  anim:'bob'},     // 1 Strategic
+  {eyes:E_DOT,   mouth:M_SMILE,   arms:ARM_GESTURE,         legs:LEGS_NORMAL, extras:GEAR,              lean:0,  anim:'bob'},     // 2 Efficient
+  {eyes:E_DOT,   mouth:M_SMILE,   arms:ARM_CLIP,            legs:LEGS_NORMAL, extras:'',                lean:0,  anim:'bob'},     // 3 Focused
+  {eyes:E_DOT,   mouth:M_SMILE,   arms:ARM_ONHIP,           legs:LEGS_NORMAL, extras:'',                lean:0,  anim:'bob'},     // 4 In control
+  {eyes:E_DOT,   mouth:M_NEUTRAL, arms:ARM_COFFEE_SIDE,     legs:LEGS_NORMAL, extras:'',                lean:0,  anim:'bob'},     // 5 Coping fine
+  {eyes:E_DOT,   mouth:M_FROWN,   arms:ARM_COFFEE_SIDE,     legs:LEGS_NORMAL, extras:SWEAT1,            lean:2,  anim:'bob'},     // 6 Fraying
+  {eyes:E_WIDE,  mouth:M_NEUTRAL, arms:ARM_COFFEE_RAISED,   legs:LEGS_WIDE,   extras:SHAKE_LINES,       lean:0,  anim:'buzz'},    // 7 Coffee-fuelled
+  {eyes:E_DROOPY,mouth:M_FROWN,   arms:ARM_COFFEE_DROOP,    legs:LEGS_NORMAL, extras:SWEAT2,            lean:13, anim:'droop'},   // 8 Running on fumes
+  {eyes:E_X,     mouth:M_TONGUE,  arms:ARM_LIMP,            legs:LEGS_BUCKLE, extras:SWEAT3+STEAMHEAD,  lean:26, anim:'collapse'}, // 9 A husk in a blazer
+];
+
+function ghostSVG(){
+  return '<g transform="translate(95 286) scale(.82)">'+
+    // crumpled heap on the ground
+    '<ellipse cx="0" cy="56" rx="28" ry="7" fill="#fff"/>'+
+    '<path d="M-24 52 L-4 58 M-20 56 L2 60 M20 52 L4 58 M18 57 L2 60"/>'+
+    '<circle cx="-18" cy="46" r="13" fill="#fff"/>'+
+    '<g transform="translate(-18 46)"><path d="M-7 -3 l4 4 M-3 -3 l-4 4 M3 -3 l4 4 M7 -3 l-4 4" stroke-width="2.4"/><path d="M-4 6 h8"/></g>'+
+    // the spirit, leaving
+    '<g transform="translate(8 -2)"><g class="ghost">'+
+      '<path d="M-13 8 q0 -24 13 -24 q13 0 13 24 q-4 -4 -6.5 0 q-2.5 4 -6.5 0 q-4 4 -6.5 0 Z" fill="#eef3ff" stroke="#3a3f4a" opacity=".92"/>'+
+      '<circle cx="-4" cy="-6" r="1.9" fill="#3a3f4a"/><circle cx="4" cy="-6" r="1.9" fill="#3a3f4a"/>'+
+      '<path d="M-3 0 q3 3 6 0" stroke="#3a3f4a"/>'+
+    '</g></g>'+
+  '</g>';
+}
+
+function charSVG(e){
+  e=Math.max(0,Math.min(10,e));
+  if(e===10) return ghostSVG();
+  const S=STATE_ART[e];
+  return '<g transform="translate(95 286) scale(.82)">'+
+    '<g class="figure '+(S.anim||'bob')+'">'+
+      '<g transform="rotate('+(S.lean||0)+' 0 40)">'+
+        (S.extras||'')+
+        '<circle cx="0" cy="-46" r="22" fill="#fff"/>'+
+        '<g transform="translate(0 -46)">'+S.eyes+S.mouth+'</g>'+
+        '<path d="M0 -24 V26"/>'+
+        S.arms+
+        S.legs+
+      '</g>'+
+    '</g>'+
+  '</g>';
+}
+
+/* per-pillar destination doodles: chaos (top) vs mature (bottom) */
+const IC_DOOR='<path d="M-13 16 V-4 q0 -14 13 -14 q13 0 13 14 V16" fill="#fff"/><circle cx="7" cy="6" r="2" fill="#1a1a1a"/><path d="M-24 4 h10 M-18 0 l-6 4 l6 4"/>';
+const IC_SCALES='<path d="M0 -18 V14"/><path d="M-16 -12 H16"/><path d="M-16 -12 L-21 -1 H-11 Z" fill="#fff"/><path d="M16 -12 L11 -1 H21 Z" fill="#fff"/><path d="M-9 14 H9"/>';
+const IC_NODES='<circle cx="-14" cy="-8" r="6" fill="#fff"/><circle cx="13" cy="-12" r="6" fill="#fff"/><circle cx="3" cy="12" r="6" fill="#fff"/><path d="M-8 -9 L7 -12 M10 -8 L5 6 M-2 10 L-10 -3"/>';
+const IC_FOLDER='<path d="M-17 -8 h11 l4 4 h19 v20 h-34 Z" fill="#ffe08a" stroke="#1a1a1a"/><path d="M-6 6 l4 4 l9 -11" stroke="#1f9d5b" stroke-width="2.6" fill="none"/>';
+const IC_CHART='<path d="M-16 -14 V14 H16" stroke-width="2.6"/><rect x="-12" y="2" width="7" height="12" fill="#6bbe2e"/><rect x="-2" y="-8" width="7" height="22" fill="#2f6bff"/><rect x="8" y="-2" width="7" height="16" fill="#e0a11e"/>';
+const IC_INBOX='<path d="M-17 14 H17 V4 L11 -2 H-11 L-17 4 Z" fill="#fff"/><rect x="-9" y="-20" width="14" height="20" fill="#fff" transform="rotate(-10 -2 -10)"/><rect x="-2" y="-22" width="14" height="20" fill="#fff" transform="rotate(12 5 -12)"/><path d="M-11 -2 H11" stroke-width="2.2" opacity=".5"/>';
+const IC_ALERT='<path d="M0 -18 L18 15 H-18 Z" fill="#fff" stroke="#e5462f" stroke-width="3.2"/><path d="M0 -6 V5" stroke="#e5462f" stroke-width="3.2"/><circle cx="0" cy="10" r="2" fill="#e5462f"/>';
+const IC_WRITE='<rect x="-15" y="-16" width="23" height="30" rx="1" fill="#fff"/><path d="M-10 -8 h13 M-10 -2 h13 M-10 4 h8"/><path d="M4 16 L19 1 l5 5 L13 21 Z" fill="#fff"/><path d="M4 16 l-2 6 l6 -2 Z" fill="#1a1a1a"/>';
+const IC_FOLDERS='<path d="M-18 4 h11 l3 3 h18 v15 h-30 Z" fill="#fff" transform="rotate(-5 -4 13)"/><path d="M-16 -3 h11 l3 3 h18 v15 h-30 Z" fill="#fff" transform="rotate(4 -2 6)"/><path d="M-14 -10 h11 l3 3 h18 v15 h-30 Z" fill="#fff"/>';
+const IC_CLIPQ='<rect x="-13" y="-15" width="26" height="31" rx="2" fill="#fff"/><rect x="-5" y="-18" width="10" height="5" rx="1.5" fill="#fff"/><path d="M-5 -4 q0 -7 6 -7 q7 0 7 6 q0 5 -6 6 v3" stroke-width="2.6" fill="none"/><circle cx="2" cy="11" r="1.9" fill="#1a1a1a"/>';
+
+const DEST = {
+  Intake:    {topLabel:'Every request reaches legal', botLabel:'Right work reaches legal',   topIcon:IC_INBOX,   botIcon:IC_DOOR},
+  Triage:    {topLabel:'Everything looks urgent',      botLabel:'Prioritised by risk',        topIcon:IC_ALERT,   botIcon:IC_SCALES},
+  Automation:{topLabel:'Every task needs a lawyer',    botLabel:'Only legal expertise reaches you', topIcon:IC_WRITE, botIcon:IC_NODES},
+  Contracts: {topLabel:'Where\u2019s the signed copy?', botLabel:'Single source of truth',      topIcon:IC_FOLDERS, botIcon:IC_FOLDER},
+  Visibility:{topLabel:'The CFO wants numbers',        botLabel:'Legal performance dashboard', topIcon:IC_CLIPQ,   botIcon:IC_CHART},
+};
+
+function destLabel(text, cx, y, color){
+  const words=String(text).split(' ');
+  const attrs='font-size="12.5" font-family="Gaegu" font-weight="700" text-anchor="middle" stroke="none" fill="'+color+'"';
+  if(text.length<=15 || words.length<=2){
+    return '<text x="'+cx+'" y="'+y+'" '+attrs+'>'+escapeXML(text)+'</text>';
+  }
+  let acc=0, mid=text.length/2, best=0, bd=1e9;
+  for(let i=0;i<words.length-1;i++){ acc+=words[i].length+1; if(Math.abs(acc-mid)<bd){bd=Math.abs(acc-mid);best=i;} }
+  const l1=words.slice(0,best+1).join(' '), l2=words.slice(best+1).join(' ');
+  return '<text x="'+cx+'" y="'+y+'" '+attrs+'><tspan x="'+cx+'">'+escapeXML(l1)+'</tspan><tspan x="'+cx+'" dy="14">'+escapeXML(l2)+'</tspan></text>';
+}
+
+function iconSvg(frag){
+  return '<svg viewBox="-34 -32 68 64" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'+frag+'</svg>';
+}
+
+function sceneSVG(level, hideCart){
+  const d = level ? DEST[level.pillar] : null;
+  return '<svg viewBox="0 0 620 340" fill="none" stroke="#1a1a1a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">'+
+    '<path d="M0 335 H620" stroke-width="2" opacity=".2"/>'+
+    // tracks: incoming, then fork up (to desk) and down (to self-serve)
+    '<path d="M40 221 H300"/>'+
+    '<path d="M300 221 Q360 221 400 150 L516 78"/>'+     // upper -> desk
+    '<path d="M300 221 Q360 221 400 250 L516 288"/>'+    // lower -> self-serve
+    '<g stroke-width="2.4" opacity=".55">'+
+      '<path d="M70 214 v14 M110 214 v14 M150 214 v14 M190 214 v14 M230 214 v14 M270 214 v14"/>'+
+    '</g>'+
+    // per-pillar destinations: chaos (top) vs mature (bottom)
+    (d ? (
+      '<g transform="translate(520 40)"><g transform="translate(0 20)" stroke-width="3">'+d.topIcon+'</g>'+destLabel(d.topLabel,0,58,'#1a1a1a')+'</g>'+
+      '<g transform="translate(520 246)"><g transform="translate(0 18)" stroke-width="3">'+d.botIcon+'</g>'+destLabel(d.botLabel,0,56,'#2f6bff')+'</g>'
+    ) : '')+
+    // reactions (hidden until impact)
+    '<g transform="translate(474 254)"><g id="poof" class="react" stroke="none">'+
+      '<path d="M0 0 l6 -14 l6 14 l14 -6 l-8 12 l14 4 l-14 4 l6 12 l-14 -6 l-4 12 l-4 -12 l-14 6 l6 -12 l-14 -4 l14 -4 l-8 -12 l14 6 Z" fill="#1f9d5b" opacity=".92"/>'+
+      '<text x="4" y="6" font-size="13" font-family="Gaegu" font-weight="700" fill="#fff" text-anchor="middle">done</text>'+
+    '</g></g>'+
+    '<g transform="translate(478 48)"><g id="splat" class="react" stroke="none">'+
+      '<path d="M0 0 q-16 -20 6 -24 q6 -18 22 -4 q20 -10 18 14 q18 8 -2 20 q4 18 -18 8 q-10 14 -22 -2 q-18 2 -4 -20 Z" fill="#e5462f"/>'+
+      '<text x="8" y="4" font-size="14" font-family="Gaegu" font-weight="700" fill="#fff" text-anchor="middle">!</text>'+
+    '</g></g>'+
+    // trolley (the request) - inner group animates
+    (hideCart?'':'<g transform="translate(130 196)"><g id="trolley" class="cart">'+
+      '<rect x="0" y="0" width="52" height="26" rx="4" fill="#fff"/>'+
+      '<circle cx="12" cy="30" r="6" fill="#fff"/><circle cx="40" cy="30" r="6" fill="#fff"/>'+
+      '<path d="M8 0 V-8 H44 V0"/>'+
+    '</g></g>')+
+    // lever (pivot at base) - flips on choice
+    '<g transform="translate(62 291)"><g id="lever" class="lever">'+
+      '<path d="M0 0 L0 -70"/><circle cx="0" cy="-70" r="5" fill="#1a1a1a"/>'+
+    '</g></g>'+
+    // character
+    '<g id="charSlot">'+charSVG(energy)+'</g>'+
+    '</svg>';
+}
+
+function escapeXML(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ---------- render ---------- */
+const sceneEl=document.getElementById('scene'),
+      promptEl=document.getElementById('prompt'),
+      choicesEl=document.getElementById('choices'),
+      outcomeEl=document.getElementById('outcome'),
+      verdictEl=document.getElementById('verdict'),
+      barsEl=document.getElementById('bars'),
+      lvlEl=document.getElementById('lvl'),
+      moodWord=document.getElementById('moodWord'),
+      energyFill=document.getElementById('energyFill'),
+      playEl=document.getElementById('play'),
+      endEl=document.getElementById('end');
+
+function paintEnergy(){
+  const e=Math.max(0,Math.min(10,energy));
+  moodWord.textContent=MOODS[e];
+  moodWord.style.color=MOOD_COLORS[e];
+  const pct=100-(e/10*100);
+  energyFill.style.width=pct+'%';
+  energyFill.style.background=MOOD_COLORS[e];
+  const bgm=document.getElementById('bgm');
+  if(bgm && soundOn){ try{ bgm.playbackRate=musicRate(); }catch(err){} }
+}
+
+function renderLevel(){
+  chosen=false;
+  const L=LEVELS[idx];
+  lvlEl.innerHTML='<b>'+L.pillar+'</b> · '+(idx+1)+' of '+LEVELS.length;
+  sceneEl.innerHTML=sceneSVG(L, false);
+  document.getElementById('question').textContent = L.q || '';
+  promptEl.innerHTML=L.prompt||'';
+  promptEl.style.display = L.prompt ? '' : 'none';
+  outcomeEl.classList.remove('on');
+  choicesEl.style.display='grid';
+  choicesEl.innerHTML='';
+  const dd=DEST[L.pillar];
+  [['a',L.a,dd.botIcon],['b',L.b,dd.topIcon]].forEach(([key,opt,icon])=>{
+    const btn=document.createElement('button');
+    btn.className='choice';
+    btn.innerHTML='<span class="opt-ic">'+iconSvg(icon)+'</span>'+
+                  '<span class="opt-tx">'+opt.label+'<small>'+opt.sub+'</small></span>';
+    btn.addEventListener('click',()=>choose(key));
+    choicesEl.appendChild(btn);
+  });
+  paintEnergy();
+}
+
+/* ---------- live voting (real data) with seeded fallback ---------- */
+const VOTE_API = '/.netlify/functions/vote';   // becomes live once deployed on Netlify
+
+async function castVote(pillar, choice){
+  try{
+    const r = await fetch(VOTE_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({pillar, choice})
+    });
+    if(!r.ok) throw 0;
+    const j = await r.json();
+    if(typeof j.a!=='number' || typeof j.b!=='number' || (j.a+j.b)<=0) throw 0;
+    return j;                       // {a, b} live totals incl. this vote
+  }catch(e){ return null; }         // offline / not deployed → use seeds
+}
+
+function pcts(L, live){
+  if(live){
+    const t=live.a+live.b;
+    return { a:Math.round(live.a/t*100), b:Math.round(live.b/t*100), live:true, n:t };
+  }
+  return { a:L.a.pct, b:L.b.pct, live:false, n:0 };
+}
+
+function peerText(L, key, p){
+  const same = key==='a' ? p.a : p.b;
+  if(p.live && p.n < 8){
+    return 'You&rsquo;re one of the first to answer this.<span class="live">real percentages appear as more teams play</span>';
+  }
+  const teams = p.live ? (p.n.toLocaleString()+' legal '+(p.n===1?'team':'teams')+' and counting') : 'sample data, real once teams play';
+  const src = '<span class="live">'+teams+'</span>';
+  if(same>=50) return '<b>'+same+'%</b> of legal teams are in your boat.'+src;
+  return "You're in the <b>"+same+'%</b> who chose this.'+src;
+}
+
+function buildBars(L, key, live){
+  const p=pcts(L,live);
+  document.getElementById('peerline').innerHTML = peerText(L,key,p);
+  barsEl.innerHTML='';
+  [['a',L.a,p.a],['b',L.b,p.b]].forEach(([k,o,pc])=>{
+    const row=document.createElement('div');
+    row.className='bar-row'+(k===key?' mine':'');
+    row.innerHTML=
+      '<div class="lab"><span>'+o.label+(k===key?'<span class="youchip">you</span>':'')+'</span><span>'+pc+'%</span></div>'+
+      '<div class="barwrap"><div class="fill" data-w="'+pc+'"></div></div>';
+    barsEl.appendChild(row);
+  });
+  requestAnimationFrame(()=>{ barsEl.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%'); });
+}
+
+function choose(key){
+  if(chosen) return; chosen=true;
+  const L=LEVELS[idx], opt=L[key];
+  const isPull = key==='a';
+  energy=Math.max(0,Math.min(10,energy+opt.de));
+  if(opt.right) judgment++;
+  pillarResult[L.pillar]={mature:!!opt.mature, good:L.good, bad:L.bad};
+
+  // 1. flip lever + roll the trolley down the chosen track
+  const lever=document.getElementById('lever');
+  const cart=document.getElementById('trolley');
+  if(lever) lever.classList.add(isPull?'pull':'nothing');
+  if(cart) cart.classList.add(isPull?'route-self':'route-desk');
+  sfxLever();
+
+  // fire the real vote immediately; results swap in when they land
+  const votePromise = castVote(L.pillar, key);
+
+  // 2. impact: reaction pops, character updates, desk hit shakes the scene
+  const impact=()=>{
+    const react=document.getElementById(isPull?'poof':'splat');
+    if(react) react.classList.add('show');
+    isPull ? sfxDing() : sfxThud();
+    if(!isPull){ sceneEl.classList.add('shake'); setTimeout(()=>sceneEl.classList.remove('shake'),420); }
+    const slot=document.getElementById('charSlot');
+    if(slot) slot.innerHTML=charSVG(energy);
+    paintEnergy();
+  };
+
+  // 3. reveal the outcome + % split after the trolley lands
+  const reveal=()=>{
+    choicesEl.style.display='none';
+    verdictEl.innerHTML=opt.verdict;
+    buildBars(L,key,null);                       // seeds first, instantly
+    votePromise.then(live=>{ if(live && chosen) buildBars(L,key,live); }); // real numbers when they arrive
+    outcomeEl.classList.add('on');
+    document.getElementById('nextBtn').textContent = (idx===LEVELS.length-1)?'See the damage →':'Next →';
+  };
+
+  if(reduce){ impact(); reveal(); }
+  else { setTimeout(impact, 820); setTimeout(reveal, 1150); }
+}
+
+document.getElementById('nextBtn').addEventListener('click',()=>{
+  if(idx<LEVELS.length-1){ idx++; sfxAdvance(); renderLevel(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else { sfxReveal(); showEnd(); }
+});
+
+/* ---------- end ---------- */
+const ORDER = ['Intake','Triage','Automation','Contracts','Visibility'];
+function showEnd(){
+  playEl.style.display='none';
+  endEl.classList.add('on');
+  sceneEl.innerHTML=sceneSVG(null,true);
+  const mature = ORDER.filter(p=>pillarResult[p] && pillarResult[p].mature).length;
+
+  let title, blurb;
+  if(mature===5){
+    title='The Legal Front Door';
+    blurb='One intake, smart triage, automated routine, contracts you can actually find, and numbers you can show the board. This is legal ops done right. Your lawyer has a weekend.';
+  } else if(mature===4){
+    title='The Well-Oiled Machine';
+    blurb='Four of five pillars are deliberate, not accidental. One weak spot is quietly generating most of your 6pm emails. Fix it and you\u2019re the model everyone copies.';
+  } else if(mature===3){
+    title='Coping, Professionally';
+    blurb='Half your operating model is a plan; the other half is adrenaline and a shared drive. Relatable, functional, and one reorg away from either greatness or a breakdown.';
+  } else if(mature===2){
+    title='The Firefighters';
+    blurb='You\u2019re excellent in a crisis, mostly because it\u2019s always a crisis. Everything routes through a human, usually you. Great instincts, no leverage.';
+  } else if(mature===1){
+    title='Running on One Good Habit';
+    blurb='One thing works. The rest is inbox archaeology and confident guessing. The good news: you\u2019ve seen what "handled" feels like. Now do it four more times.';
+  } else {
+    title='Running on Vibes';
+    blurb='No front door, no triage, no automation, no source of truth, no numbers. Somehow the work gets done. Nobody knows how. Please, for everyone, sit down.';
+  }
+
+  document.getElementById('endTitle').textContent=title;
+  document.getElementById('endBlurb').innerHTML=blurb;
+
+  // scorecard: where the team sits on each pillar's maturity axis
+  const sc=document.getElementById('scorecard'); sc.innerHTML='';
+  ORDER.forEach(p=>{
+    const r=pillarResult[p]; if(!r) return;
+    const row=document.createElement('div');
+    row.className='sc-row '+(r.mature?'good':'bad');
+    const low ='<span class="pole '+(r.mature?'dim':'on-low')+'">'+r.bad+'</span>';
+    const high='<span class="pole '+(r.mature?'on-high':'dim')+'">'+r.good+'</span>';
+    row.innerHTML='<span class="pill">'+p+'</span>'+
+      '<span class="axis">'+low+'<span class="arr">\u2192</span>'+high+'</span>';
+    sc.appendChild(row);
+  });
+
+  const ml=document.getElementById('endMoodLine');
+  ml.innerHTML='Your lawyer finished the year <span style="color:'+MOOD_COLORS[energy]+'">'+MOODS[energy]+'</span> &middot; '+mature+'/5 pillars running like they should.';
+
+  // adaptive CTA headline by how the team scored
+  let ctaHead;
+  if(mature>=5)      ctaHead='You already run the playbook. See how Checkbox makes it effortless.';
+  else if(mature>=3) ctaHead='Halfway to handled. Let&rsquo;s close the gap.';
+  else if(mature===2)ctaHead='Firefighting again? Let&rsquo;s give you a system.';
+  else               ctaHead='Running on vibes? Let&rsquo;s fix that.';
+  document.getElementById('ctaHead').innerHTML=ctaHead;
+
+  mountHubspotForm();
+}
+
+function resetGame(){
+  energy=5; judgment=0; idx=0;
+  ORDER.forEach(p=>delete pillarResult[p]);
+  endEl.classList.remove('on'); playEl.style.display='block';
+  renderLevel(); window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('againBtn').addEventListener('click', resetGame);
+document.getElementById('restartBtn').addEventListener('click', resetGame);
+document.getElementById('soundBtn').addEventListener('click', toggleSound);
+
+/* popup form open/close */
+const formModal=document.getElementById('formModal');
+function populateModalResult(){
+  const reactive=ORDER.filter(p=>pillarResult[p] && !pillarResult[p].mature);
+  const arch=(document.getElementById('endTitle').textContent||'').trim();
+  const a=document.getElementById('modalArch'); if(a) a.textContent=arch;
+  const chips=document.getElementById('modalChips');
+  const head=document.getElementById('modalHead');
+  const sub=document.getElementById('modalSub');
+  if(reactive.length===0){
+    if(chips) chips.innerHTML='<span class="rchip good">All five pillars mature</span>';
+    if(head) head.textContent='You&rsquo;re already running the playbook';
+    if(sub) sub.innerHTML='See how Checkbox keeps it that way as the team scales &mdash; and where the last of the manual work goes.';
+  } else {
+    if(chips) chips.innerHTML=reactive.map(p=>'<span class="rchip">'+p+': '+pillarResult[p].bad+' &rarr; '+pillarResult[p].good+'</span>').join('');
+    if(head) head.textContent='See how Checkbox closes your gaps';
+    if(sub) sub.innerHTML='Based on your answers, Checkbox targets exactly where you&rsquo;re still reactive. Drop your details and grab a walkthrough.';
+  }
+}
+function openForm(){ populateModalResult(); mountHubspotForm(); formModal.classList.add('on'); }
+function closeForm(){ formModal.classList.remove('on'); }
+document.getElementById('ctaOpen').addEventListener('click', openForm);
+document.getElementById('modalClose').addEventListener('click', closeForm);
+formModal.addEventListener('click', e=>{ if(e.target===formModal) closeForm(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeForm(); });
+
+/* ---------- mount Checkbox's HubSpot form (Chili Piper routing handled below) ---------- */
+let hsMounted=false, hsTries=0;
+function mountHubspotForm(){
+  if(hsMounted) return;
+  const target=document.getElementById('hubspotForm');
+  if(!target) return;
+  if(window.hbspt && window.hbspt.forms){
+    hsMounted=true;
+    target.innerHTML='';
+    try{
+      window.hbspt.forms.create({
+        region:"na1",
+        portalId:"4351004",
+        formId:"ad82bdab-9ec9-4e52-9c1e-690b6137f680",
+        target:"#hubspotForm",
+        onFormSubmit:function($form){
+          try{
+            var fn = ($form && $form[0] && $form[0].fullName) ? $form[0].fullName.value : '';
+            var em = ($form && $form[0] && $form[0].email) ? $form[0].email.value : '';
+            if(window.navattic && window.navattic.identify){
+              window.navattic.identify({'user.fullName':fn,'user.email':em});
+            }
+          }catch(e){}
+        }
+      });
+    }catch(e){ hsMounted=false; }
+    return;
+  }
+  hsTries++;
+  if(hsTries<16){ setTimeout(mountHubspotForm, 300); }
+  else { target.innerHTML='<a class="cta-fallback" href="https://checkbox.ai" target="_blank" rel="noopener">See how Checkbox works</a>'; }
+}
+
+renderLevel();
+mountHubspotForm();   // start loading in the background during gameplay, so it's ready at the end
+updateSoundIcon();
+startAudio();         // default on; if the browser blocks autoplay, the first interaction starts it
+['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev, startAudio, {passive:true}));
+</script>
+
+<!-- Checkbox marketing stack: HubSpot form embed + Chili Piper inbound routing -->
+<script charset="utf-8" src="https://js.hsforms.net/forms/embed/v2.js"></script>
+<script src="https://js.chilipiper.com/marketing.js"></script>
+<script>
+  /* When the HubSpot form is submitted, hand the lead to Chili Piper's inbound router
+     so the prospect can book a meeting immediately. */
+  var cpTenantDomain = "checkbox";
+  var cpRouterName = "inbound-router";
+  var lead = {};
+  var cpHubspotFormIDs = ["ad82bdab-9ec9-4e52-9c1e-690b6137f680"];
+  window.addEventListener("message", function (event) {
+    if (cpHubspotFormIDs.length > 0 && (!event.data || !cpHubspotFormIDs.includes(event.data.id))) return;
+    if (event.data.type === "hsFormCallback") {
+      if (event.data.eventName === "onFormSubmit") {
+        for (var key in event.data.data) {
+          if (Array.isArray(event.data.data[key].value)) { event.data.data[key].value = event.data.data[key].value.toString().replaceAll(",", ";"); }
+          lead[event.data.data[key].name] = event.data.data[key].value;
+        }
+        if (Object.keys(lead).length <= 1) { lead = event.data.data; }
+      } else if (event.data.eventName === "onFormSubmitted") {
+        try { ChiliPiper.submit(cpTenantDomain, cpRouterName, { map: true, lead: lead }); } catch (e) {}
+        try { if (window.navattic && window.navattic.identify) window.navattic.identify({ email: lead.email }); } catch (e) {}
+      }
+    }
+  });
+</script>
+</body>
+</html>
