@@ -24,6 +24,14 @@
   .restart{margin:8px 4px 0;font-family:'Gaegu';font-weight:700;font-size:14px;background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:5px 14px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .08s}
   .sound-icon{position:fixed;top:14px;right:16px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:#b3b8c0;cursor:pointer;padding:4px;opacity:.7;transition:opacity .15s,color .15s;z-index:30}
   .sound-icon:hover{opacity:1;color:var(--ink)}
+  .start{text-align:center;padding:6px 6px 26px}
+  .start-fig{max-width:210px;margin:8px auto 2px}
+  .start-fig svg{width:100%;height:auto;display:block}
+  .start-mood{font-family:'Gaegu';font-weight:700;font-size:21px;min-height:26px;margin:2px 0 4px;transition:color .3s}
+  .start-sub{font-size:16px;line-height:1.5;color:#555;max-width:44ch;margin:8px auto 24px}
+  .start-btn{font-family:'Gaegu';font-weight:700;font-size:22px;background:var(--blue);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 44px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .08s}
+  .start-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+  .start-btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
   .restart:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 
   /* energy chip */
@@ -54,16 +62,18 @@
   .outcome{display:none}
   .outcome.on{display:block}
   .outcome .verdict{font-size:20px;line-height:1.45;text-align:center;margin-bottom:14px}
-  .peerline{text-align:center;font-family:'Gaegu';font-weight:700;font-size:18px;margin-bottom:14px;min-height:24px}
-  .peerline b{font-size:22px}
-  .peerline .live{font-family:'Kalam';font-weight:400;font-size:12px;color:#999;display:block;margin-top:1px}
-  .bars .bar-row{margin-bottom:10px}
-  .bars .lab{display:flex;justify-content:space-between;font-family:'Gaegu';font-weight:700;font-size:15px;margin-bottom:3px}
-  .bars .barwrap{height:22px;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
-  .bars .fill{height:100%;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1);background:#dcdcdc}
+  .peerline{text-align:left;font-family:'Gaegu';font-weight:700;font-size:16px;margin:0 auto 12px;max-width:460px;color:var(--ink)}
+  .peerline .live{font-family:'Kalam';font-weight:400;font-size:12px;color:#999;margin-left:7px}
+  .bars{max-width:460px;margin:0 auto}
+  .bars .bar-row{margin-bottom:14px}
+  .bars .bar-top{display:flex;align-items:center;gap:10px}
+  .bars .barwrap{flex:1;height:20px;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
+  .bars .fill{height:100%;width:0;transition:width .7s cubic-bezier(.2,.8,.2,1);background:#cfd6df}
   .bars .bar-row.mine .fill{background:var(--blue)}
-  .bars .bar-row.mine .lab{color:var(--blue)}
-  .youchip{font-family:'Gaegu';font-weight:700;font-size:12px;color:#fff;background:var(--blue);border-radius:20px;padding:1px 8px;margin-left:6px}
+  .bars .bar-pct{font-family:'Gaegu';font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  .youmark{font-family:'Gaegu';font-weight:700;font-size:13px;color:var(--blue);white-space:nowrap}
+  .bars .bar-stmt{font-family:'Kalam';font-size:14px;color:#555;margin-top:5px;line-height:1.35}
+  .bars .bar-row.mine .bar-stmt{color:var(--ink);font-weight:700}
 
   .next{display:block;margin:20px auto 0;font-family:'Gaegu';font-weight:700;font-size:20px;background:var(--ink);color:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:13px 30px;cursor:pointer;box-shadow:3px 3px 0 #999;transition:transform .08s}
   .next:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #999}
@@ -205,7 +215,13 @@
     <h1>Absurd Legal Team Problems</h1>
     <div class="subtitle" id="subtitle">Five decisions. Find out how your legal team really runs.</div>
     <div class="lvl" id="lvl"><b>Intake</b> · 1 of 5</div>
-    <button class="restart" id="restartBtn">↻ Start over</button>
+  </div>
+
+  <div class="start" id="start">
+    <div class="start-fig" id="startFig"></div>
+    <div class="start-mood" id="startMood"></div>
+    <p class="start-sub">Every legal team lands somewhere on this scale. Answer five quick questions to find out where yours sits, and how you compare to everyone else who&rsquo;s played.</p>
+    <button class="start-btn" id="startBtn">Start</button>
   </div>
 
   <div class="energy">
@@ -679,30 +695,33 @@ function pcts(L, live){
   return { a:L.a.pct, b:L.b.pct, live:false, n:0 };
 }
 
-function peerText(L, key, p){
-  const same = key==='a' ? p.a : p.b;
-  if(p.live && p.n < 8){
-    return 'You&rsquo;re one of the first to answer this.<span class="live">real percentages appear as more teams play</span>';
-  }
-  const teams = p.live ? (p.n.toLocaleString()+' legal '+(p.n===1?'team':'teams')+' and counting') : 'sample data, real once teams play';
-  const src = '<span class="live">'+teams+'</span>';
-  if(same>=50) return '<b>'+same+'%</b> of legal teams are in your boat.'+src;
-  return "You're in the <b>"+same+'%</b> who chose this.'+src;
-}
-
 function buildBars(L, key, live){
   const p=pcts(L,live);
-  document.getElementById('peerline').innerHTML = peerText(L,key,p);
+  const lowSample = p.live && p.n < 8;
+  const head=document.getElementById('peerline');
+  if(lowSample){
+    head.innerHTML='You&rsquo;re one of the first to answer this<span class="live">real percentages appear as more teams play</span>';
+  } else if(p.live){
+    head.innerHTML='How other legal teams answered<span class="live">'+p.n.toLocaleString()+' so far</span>';
+  } else {
+    head.innerHTML='How other legal teams answered<span class="live">sample data, real once teams play</span>';
+  }
   barsEl.innerHTML='';
   [['a',L.a,p.a],['b',L.b,p.b]].forEach(([k,o,pc])=>{
     const row=document.createElement('div');
     row.className='bar-row'+(k===key?' mine':'');
-    row.innerHTML=
-      '<div class="lab"><span>'+o.label+(k===key?'<span class="youchip">you</span>':'')+'</span><span>'+pc+'%</span></div>'+
-      '<div class="barwrap"><div class="fill" data-w="'+pc+'"></div></div>';
+    const you = k===key ? '<span class="youmark">&larr; You</span>' : '';
+    if(lowSample){
+      row.innerHTML='<div class="bar-stmt">'+o.label+' '+you+'</div>';
+    } else {
+      row.innerHTML=
+        '<div class="bar-top"><div class="barwrap"><div class="fill" data-w="'+pc+'"></div></div>'+
+        '<span class="bar-pct">'+pc+'%</span>'+you+'</div>'+
+        '<div class="bar-stmt">'+o.label+'</div>';
+    }
     barsEl.appendChild(row);
   });
-  requestAnimationFrame(()=>{ barsEl.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%'); });
+  if(!lowSample) requestAnimationFrame(()=>{ barsEl.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%'); });
 }
 
 function choose(key){
@@ -818,8 +837,44 @@ function resetGame(){
   endEl.classList.remove('on'); playEl.style.display='block';
   renderLevel(); window.scrollTo({top:0,behavior:'smooth'});
 }
+function screenStart(){
+  document.getElementById('start').style.display='';
+  document.querySelector('.energy').style.display='none';
+  sceneEl.style.display='none';
+  lvlEl.style.display='none';
+  playEl.style.display='none';
+  endEl.classList.remove('on');
+  startCycle();
+}
+function beginGame(){
+  stopCycle();
+  document.getElementById('start').style.display='none';
+  document.querySelector('.energy').style.display='';
+  sceneEl.style.display='';
+  lvlEl.style.display='';
+  resetGame();
+}
+
+/* start-screen preview: cycle through the spectrum so players see the range they'll be scored on */
+const START_SEQ=[0,2,4,5,7,8,9,10];   // Thriving ... a husk ... left the building
+let startTimer=null, startSeqI=0;
+function renderStartFig(state){
+  const fig=document.getElementById('startFig');
+  if(fig) fig.innerHTML='<svg viewBox="55 195 90 150" fill="none" stroke="#1a1a1a" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">'+charSVG(state)+'</svg>';
+  const m=document.getElementById('startMood');
+  if(m){ m.textContent=MOODS[state]; m.style.color=MOOD_COLORS[state]; }
+}
+function startCycle(){
+  stopCycle(); startSeqI=0; renderStartFig(START_SEQ[0]);
+  if(reduce) return;
+  startTimer=setInterval(()=>{
+    startSeqI=(startSeqI+1)%START_SEQ.length;
+    renderStartFig(START_SEQ[startSeqI]);
+  }, 1500);
+}
+function stopCycle(){ if(startTimer){ clearInterval(startTimer); startTimer=null; } }
 document.getElementById('againBtn').addEventListener('click', resetGame);
-document.getElementById('restartBtn').addEventListener('click', resetGame);
+document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
 
 /* popup form open/close */
@@ -834,7 +889,7 @@ function populateModalResult(){
   if(reactive.length===0){
     if(chips) chips.innerHTML='<span class="rchip good">All five pillars mature</span>';
     if(head) head.textContent='You&rsquo;re already running the playbook';
-    if(sub) sub.innerHTML='See how Checkbox keeps it that way as the team scales &mdash; and where the last of the manual work goes.';
+    if(sub) sub.innerHTML='See how Checkbox keeps it that way as the team scales, and where the last of the manual work goes.';
   } else {
     if(chips) chips.innerHTML=reactive.map(p=>'<span class="rchip">'+p+': '+pillarResult[p].bad+' &rarr; '+pillarResult[p].good+'</span>').join('');
     if(head) head.textContent='See how Checkbox closes your gaps';
@@ -881,7 +936,7 @@ function mountHubspotForm(){
   else { target.innerHTML='<a class="cta-fallback" href="https://checkbox.ai" target="_blank" rel="noopener">See how Checkbox works</a>'; }
 }
 
-renderLevel();
+screenStart();
 mountHubspotForm();   // start loading in the background during gameplay, so it's ready at the end
 updateSoundIcon();
 startAudio();         // default on; if the browser blocks autoplay, the first interaction starts it
