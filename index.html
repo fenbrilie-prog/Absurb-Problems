@@ -294,7 +294,7 @@
     <div class="end-cta" id="endCta">
       <h3 class="end-cta-head" id="endCtaHead"></h3>
       <p class="end-cta-sub" id="endCtaSub"></p>
-      <button class="end-cta-btn" id="bookBtn">Book a walkthrough</button>
+      <button class="end-cta-btn" id="bookBtn">Try Checkbox</button>
     </div>
     <button class="next again-btn" id="againBtn">Play again</button>
   </div>
@@ -1043,7 +1043,7 @@ function stopCycle(){ if(startTimer){ clearInterval(startTimer); startTimer=null
 document.getElementById('againBtn').addEventListener('click', resetGame);
 document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
-const DEMO_URL="https://checkbox.ai/book-demo";   // where "Book a walkthrough" sends people (opens in a new tab)
+const DEMO_URL="https://www.checkbox.ai/try-checkbox";   // where "Try Checkbox" sends people (opens in a new tab)
 document.getElementById('bookBtn').addEventListener('click', function(){ window.open(DEMO_URL,'_blank','noopener'); });
 
 /* ---------- custom gate form: submits straight to HubSpot, then unlocks results ---------- */
