@@ -32,6 +32,15 @@
   .start-btn{font-family:'Gaegu';font-weight:700;font-size:22px;background:var(--blue);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 44px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .08s}
   .start-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
   .start-btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+
+  .gate{display:none;text-align:center;padding:6px 4px 20px}
+  .gate-lead{font-family:'Kalam';font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#b58a3a;margin-bottom:4px}
+  .gate-title{font-family:'Gaegu';font-weight:700;font-size:clamp(26px,6vw,34px);line-height:1.05;margin-bottom:8px}
+  .gate-sub{font-size:16px;line-height:1.5;color:#555;max-width:42ch;margin:0 auto 16px}
+  .gate-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;max-width:440px;margin:0 auto 18px}
+  .gate-chip-lead{font-family:'Kalam';font-size:13px;color:#777;width:100%;margin-bottom:2px}
+  .gate-note{font-family:'Kalam';font-size:13px;color:#888;max-width:38ch;margin:14px auto 0}
+  .again-btn{background:#fff;color:var(--ink);box-shadow:3px 3px 0 var(--ink);margin-top:6px}
   .restart:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 
   /* energy chip */
@@ -256,32 +265,19 @@
     <p class="sc-title">Where your team sits on the legal-ops maturity curve</p>
     <div class="scorecard" id="scorecard"></div>
     <p class="endmood" id="endMoodLine"></p>
+    <button class="next again-btn" id="againBtn">Play again</button>
+  </div>
 
-    <div class="cta">
-      <h3 class="cta-head" id="ctaHead">Running on vibes? Let&rsquo;s fix that.</h3>
-      <p class="cta-sub">See how Checkbox gives your team structured intake, smarter triage, automation and clear visibility.</p>
-      <div class="cta-actions">
-        <button class="cta-primary" id="ctaOpen">See how Checkbox works</button>
-        <button class="cta-secondary" id="againBtn">Play again</button>
-      </div>
-    </div>
+  <div class="gate" id="gate">
+    <div class="gate-lead">Answers locked in</div>
+    <h2 class="gate-title">See how you compare</h2>
+    <p class="gate-sub">You&rsquo;ve made all five calls. Unlock exactly how your team stacks up against <b id="gateCount">other legal teams</b>, pillar by pillar.</p>
+    <div class="gate-chips" id="gateChips"></div>
+    <div id="hubspotForm" class="hsform-wrap"><span class="hs-loading">loading&hellip;</span></div>
+    <p class="gate-note">Want a proper walkthrough? Tick &ldquo;I want a demo&rdquo; in the form and we&rsquo;ll set you up.</p>
   </div>
   </div>
   <div class="credit">Music: &ldquo;Monkeys Spinning Monkeys&rdquo; by Kevin MacLeod &middot; <a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a> &middot; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
-</div>
-
-<div class="modal" id="formModal">
-  <div class="modal-card">
-    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
-    <div class="modal-result">
-      <span class="mr-label">Your result</span>
-      <div class="mr-arch" id="modalArch"></div>
-      <div class="mr-chips" id="modalChips"></div>
-    </div>
-    <h4 class="modal-head" id="modalHead">See how Checkbox closes your gaps</h4>
-    <p class="modal-sub" id="modalSub">Based on your answers, Checkbox targets exactly where you&rsquo;re still reactive. Drop your details and grab a walkthrough.</p>
-    <div id="hubspotForm" class="hsform-wrap"><span class="hs-loading">loading&hellip;</span></div>
-  </div>
 </div>
 
 <script>
@@ -766,14 +762,13 @@ function choose(key){
     paintEnergy();
   };
 
-  // 3. reveal the outcome + % split after the trolley lands
+  // 3. reveal the verdict (comparison is gated to the end now)
   const reveal=()=>{
     choicesEl.style.display='none';
     verdictEl.innerHTML=opt.verdict;
-    buildBars(L,key,null);                       // seeds first, instantly
-    votePromise.then(live=>{ if(live && chosen) buildBars(L,key,live); recordCompare(L.pillar,key,live); }); // real numbers when they arrive
+    votePromise.then(live=>{ recordCompare(L.pillar,key,live); }); // still records the vote + crowd split for the end
     outcomeEl.classList.add('on');
-    document.getElementById('nextBtn').textContent = (idx===LEVELS.length-1)?'See the damage →':'Next →';
+    document.getElementById('nextBtn').textContent = (idx===LEVELS.length-1)?'See how you compare →':'Next →';
   };
 
   if(reduce){ impact(); reveal(); }
@@ -782,13 +777,14 @@ function choose(key){
 
 document.getElementById('nextBtn').addEventListener('click',()=>{
   if(idx<LEVELS.length-1){ idx++; sfxAdvance(); renderLevel(); window.scrollTo({top:0,behavior:'smooth'}); }
-  else { sfxReveal(); showEnd(); }
+  else { sfxReveal(); showGate(); }
 });
 
 /* ---------- end ---------- */
 const ORDER = ['Intake','Triage','Automation','Contracts','Visibility'];
 function showEnd(){
   playEl.style.display='none';
+  document.getElementById('gate').style.display='none';
   endEl.classList.add('on');
   sceneEl.innerHTML=sceneSVG(null,true);
   const mature = ORDER.filter(p=>pillarResult[p] && pillarResult[p].mature).length;
@@ -845,26 +841,47 @@ function showEnd(){
 
   const ml=document.getElementById('endMoodLine');
   ml.innerHTML='Your lawyer finished the year <span style="color:'+MOOD_COLORS[energy]+'">'+MOODS[energy]+'</span> &middot; '+mature+'/5 pillars running like they should.';
-
-  // adaptive CTA headline by how the team scored
-  let ctaHead;
-  if(mature>=5)      ctaHead='You already run the playbook. See how Checkbox makes it effortless.';
-  else if(mature>=3) ctaHead='Halfway to handled. Let&rsquo;s close the gap.';
-  else if(mature===2)ctaHead='Firefighting again? Let&rsquo;s give you a system.';
-  else               ctaHead='Running on vibes? Let&rsquo;s fix that.';
-  document.getElementById('ctaHead').innerHTML=ctaHead;
-
-  mountHubspotForm();
 }
 
 function resetGame(){
   energy=5; judgment=0; idx=0;
   ORDER.forEach(p=>delete pillarResult[p]);
-  endEl.classList.remove('on'); playEl.style.display='block';
+  endEl.classList.remove('on'); document.getElementById('gate').style.display='none'; playEl.style.display='block';
   renderLevel(); window.scrollTo({top:0,behavior:'smooth'});
 }
+
+/* ---------- gate: the locked form wall before results ---------- */
+function populateGate(){
+  let n=0; ORDER.forEach(p=>{ const r=pillarResult[p]; if(r && r.n>n) n=r.n; });
+  const countEl=document.getElementById('gateCount');
+  if(countEl) countEl.textContent = n>=3 ? (n.toLocaleString()+' other legal teams') : 'other legal teams';
+  const reactive=ORDER.filter(p=>pillarResult[p] && !pillarResult[p].mature);
+  const chips=document.getElementById('gateChips');
+  if(chips){
+    chips.innerHTML = reactive.length
+      ? '<span class="gate-chip-lead">You&rsquo;ll see where you stand on:</span>'+reactive.map(p=>'<span class="rchip">'+p+'</span>').join('')
+      : '<span class="rchip good">all five pillars mature</span>';
+  }
+}
+function showGate(){
+  playEl.style.display='none';
+  endEl.classList.remove('on');
+  document.getElementById('gate').style.display='';
+  sceneEl.innerHTML=sceneSVG(null,true);      // final character as a teaser
+  paintEnergy();
+  populateGate();
+  mountHubspotForm();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* called by the HubSpot submit listener (below) once they opt in */
+window.revealResults=function(){
+  document.getElementById('gate').style.display='none';
+  showEnd();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
 function screenStart(){
   document.getElementById('start').style.display='';
+  document.getElementById('gate').style.display='none';
   document.querySelector('.energy').style.display='none';
   sceneEl.style.display='none';
   lvlEl.style.display='none';
@@ -903,32 +920,6 @@ document.getElementById('againBtn').addEventListener('click', resetGame);
 document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
 
-/* popup form open/close */
-const formModal=document.getElementById('formModal');
-function populateModalResult(){
-  const reactive=ORDER.filter(p=>pillarResult[p] && !pillarResult[p].mature);
-  const arch=(document.getElementById('endTitle').textContent||'').trim();
-  const a=document.getElementById('modalArch'); if(a) a.textContent=arch;
-  const chips=document.getElementById('modalChips');
-  const head=document.getElementById('modalHead');
-  const sub=document.getElementById('modalSub');
-  if(reactive.length===0){
-    if(chips) chips.innerHTML='<span class="rchip good">All five pillars mature</span>';
-    if(head) head.textContent='You&rsquo;re already running the playbook';
-    if(sub) sub.innerHTML='See how Checkbox keeps it that way as the team scales, and where the last of the manual work goes.';
-  } else {
-    if(chips) chips.innerHTML=reactive.map(p=>'<span class="rchip">'+p+': '+pillarResult[p].bad+' &rarr; '+pillarResult[p].good+'</span>').join('');
-    if(head) head.textContent='See how Checkbox closes your gaps';
-    if(sub) sub.innerHTML='Based on your answers, Checkbox targets exactly where you&rsquo;re still reactive. Drop your details and grab a walkthrough.';
-  }
-}
-function openForm(){ populateModalResult(); mountHubspotForm(); formModal.classList.add('on'); }
-function closeForm(){ formModal.classList.remove('on'); }
-document.getElementById('ctaOpen').addEventListener('click', openForm);
-document.getElementById('modalClose').addEventListener('click', closeForm);
-formModal.addEventListener('click', e=>{ if(e.target===formModal) closeForm(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeForm(); });
-
 /* ---------- mount Checkbox's HubSpot form (Chili Piper routing handled below) ---------- */
 let hsMounted=false, hsTries=0;
 function mountHubspotForm(){
@@ -959,7 +950,11 @@ function mountHubspotForm(){
   }
   hsTries++;
   if(hsTries<16){ setTimeout(mountHubspotForm, 300); }
-  else { target.innerHTML='<a class="cta-fallback" href="https://checkbox.ai" target="_blank" rel="noopener">See how Checkbox works</a>'; }
+  else {
+    target.innerHTML='<button class="cta-fallback" id="gateFallback">See my results &rarr;</button>';
+    const fb=document.getElementById('gateFallback');
+    if(fb) fb.addEventListener('click', function(){ if(window.revealResults) window.revealResults(); });
+  }
 }
 
 screenStart();
@@ -979,6 +974,16 @@ startAudio();         // default on; if the browser blocks autoplay, the first i
   var cpRouterName = "inbound-router";
   var lead = {};
   var cpHubspotFormIDs = ["ad82bdab-9ec9-4e52-9c1e-690b6137f680"];
+  /* true if any submitted field looks like a "want a demo" opt-in with a truthy value */
+  function wantsDemo(l){
+    for (var k in l){
+      if (/demo/i.test(k)){
+        var v = ('' + l[k]).trim().toLowerCase();
+        if (v && v!=='false' && v!=='no' && v!=='0' && v!=='off' && v!=='undefined') return true;
+      }
+    }
+    return false;
+  }
   window.addEventListener("message", function (event) {
     if (cpHubspotFormIDs.length > 0 && (!event.data || !cpHubspotFormIDs.includes(event.data.id))) return;
     if (event.data.type === "hsFormCallback") {
@@ -989,7 +994,10 @@ startAudio();         // default on; if the browser blocks autoplay, the first i
         }
         if (Object.keys(lead).length <= 1) { lead = event.data.data; }
       } else if (event.data.eventName === "onFormSubmitted") {
-        try { ChiliPiper.submit(cpTenantDomain, cpRouterName, { map: true, lead: lead }); } catch (e) {}
+        try { if (window.revealResults) window.revealResults(); } catch (e) {}       // unlock the comparison
+        if (wantsDemo(lead)) {                                                        // only book if they asked for a demo
+          try { ChiliPiper.submit(cpTenantDomain, cpRouterName, { map: true, lead: lead }); } catch (e) {}
+        }
         try { if (window.navattic && window.navattic.identify) window.navattic.identify({ email: lead.email }); } catch (e) {}
       }
     }
