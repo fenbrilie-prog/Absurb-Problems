@@ -1073,6 +1073,7 @@ window.bookDemo=function(){
       window.__lead=leadObj;
       try{ if(window.navattic&&window.navattic.identify) window.navattic.identify({'user.email':leadObj.email,'user.fullName':((leadObj.firstname||'')+' '+(leadObj.lastname||'')).trim()}); }catch(_){}
       if(window.revealResults) window.revealResults();
+      setTimeout(function(){ if(window.bookDemo) window.bookDemo(); }, 900);   // offer the calendar; they can book or close it
     }catch(err){
       errEl.textContent = err.message || 'Submission failed. Please try again.';
       btn.disabled=false; btn.textContent=label;
