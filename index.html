@@ -1043,13 +1043,11 @@ function stopCycle(){ if(startTimer){ clearInterval(startTimer); startTimer=null
 document.getElementById('againBtn').addEventListener('click', resetGame);
 document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
-document.getElementById('bookBtn').addEventListener('click', function(){ if(window.bookDemo) window.bookDemo(); });
+const DEMO_URL="https://checkbox.ai/book-demo";   // where "Book a walkthrough" sends people (opens in a new tab)
+document.getElementById('bookBtn').addEventListener('click', function(){ window.open(DEMO_URL,'_blank','noopener'); });
 
 /* ---------- custom gate form: submits straight to HubSpot, then unlocks results ---------- */
 const HS_PORTAL="4351004", HS_FORM="8317ba01-e280-4750-b3dd-70da11c88702";
-window.bookDemo=function(){
-  try{ if(window.ChiliPiper) window.ChiliPiper.submit("checkbox","inbound-router",{ map:true, lead: window.__lead || {} }); }catch(e){}
-};
 (function(){
   const form=document.getElementById('leadForm');
   if(!form) return;
@@ -1073,7 +1071,6 @@ window.bookDemo=function(){
       window.__lead=leadObj;
       try{ if(window.navattic&&window.navattic.identify) window.navattic.identify({'user.email':leadObj.email,'user.fullName':((leadObj.firstname||'')+' '+(leadObj.lastname||'')).trim()}); }catch(_){}
       if(window.revealResults) window.revealResults();
-      setTimeout(function(){ if(window.bookDemo) window.bookDemo(); }, 900);   // offer the calendar; they can book or close it
     }catch(err){
       errEl.textContent = err.message || 'Submission failed. Please try again.';
       btn.disabled=false; btn.textContent=label;
@@ -1088,7 +1085,5 @@ startAudio();         // default on; if the browser blocks autoplay, the first i
 ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev, startAudio, {passive:true}));
 </script>
 
-<!-- Chili Piper booking (fired from the results page "Book a walkthrough" button) -->
-<script src="https://js.chilipiper.com/marketing.js"></script>
 </body>
 </html>
