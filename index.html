@@ -41,6 +41,12 @@
   .gate-chip-lead{font-family:'Kalam';font-size:13px;color:#777;width:100%;margin-bottom:2px}
   .gate-note{font-family:'Kalam';font-size:13px;color:#888;max-width:38ch;margin:14px auto 0}
   .again-btn{background:#fff;color:var(--ink);box-shadow:3px 3px 0 var(--ink);margin-top:6px}
+  .end-cta{max-width:440px;margin:22px auto 4px;padding:18px 18px 20px;border:3px solid var(--ink);border-radius:16px;background:#eef3ff;box-shadow:4px 4px 0 var(--ink);text-align:center}
+  .end-cta-head{font-family:'Gaegu';font-weight:700;font-size:clamp(19px,4.5vw,24px);line-height:1.15;margin-bottom:5px}
+  .end-cta-sub{font-size:15px;line-height:1.5;color:#444;margin:0 auto 15px;max-width:38ch}
+  .end-cta-btn{font-family:'Gaegu';font-weight:700;font-size:20px;background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:13px 34px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+  .end-cta-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .end-cta-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
   .restart:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--ink)}
 
   /* energy chip */
@@ -141,29 +147,37 @@
   .rchip{font-family:'Kalam';font-size:12px;background:#fff;border:1.5px solid var(--amber);color:#8a5a12;border-radius:20px;padding:3px 10px}
   .rchip.good{border-color:var(--green);color:#1f7a4d}
 
-  .hsform-wrap{max-width:440px;margin:0 auto;text-align:left}
+  .hsform-wrap{max-width:460px;margin:0 auto;text-align:left}
   .cta-fallback{display:inline-block;font-family:'Gaegu';font-weight:700;font-size:17px;background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:12px 22px;text-decoration:none;box-shadow:3px 3px 0 var(--ink)}
   .hs-loading{display:block;text-align:center;font-family:'Kalam';font-size:14px;color:#aab;padding:14px 0}
-  .hsform-wrap form{display:flex;flex-direction:column;gap:12px}
-  .hsform-wrap fieldset{max-width:none!important;width:100%}
-  .hsform-wrap .hs-form-field{margin:0}
-  .hsform-wrap .hs-form-field > label{display:block;font-family:'Gaegu';font-weight:700;font-size:15px;margin-bottom:5px;color:var(--ink)}
-  .hsform-wrap .hs-form-required{color:var(--red)}
-  .hsform-wrap input.hs-input,.hsform-wrap select.hs-input,.hsform-wrap textarea.hs-input{
-    width:100%;font-family:'Kalam',cursive;font-size:16px;padding:11px 13px;background:#fff;color:var(--ink);
-    border:2.5px solid var(--ink);border-radius:11px;box-shadow:2px 2px 0 rgba(26,26,26,.15);outline:none}
-  .hsform-wrap input.hs-input:focus,.hsform-wrap select.hs-input:focus,.hsform-wrap textarea.hs-input:focus{
-    border-color:var(--blue);box-shadow:2px 2px 0 rgba(47,107,255,.28)}
-  .hsform-wrap .hs-input::placeholder{color:#aaa}
-  .hsform-wrap ul.hs-error-msgs{list-style:none;margin:4px 0 0;padding:0}
-  .hsform-wrap .hs-error-msg,.hsform-wrap label.hs-error-msg{color:var(--red);font-family:'Kalam';font-size:13px}
-  .hsform-wrap .hs-button,.hsform-wrap input[type=submit].hs-button{
-    display:block;width:100%;cursor:pointer;font-family:'Gaegu';font-weight:700;font-size:19px;margin-top:4px;
-    background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:13px;
-    box-shadow:3px 3px 0 var(--ink);transition:transform .08s}
-  .hsform-wrap .hs-button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
-  .hsform-wrap .hs-button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
-  .hsform-wrap .legal-consent-container,.hsform-wrap .hs-richtext{font-family:'Kalam';font-size:12px;color:#888;line-height:1.4}
+  /* force the doodle theme over HubSpot's injected styles */
+  #hubspotForm .hs-form{display:flex!important;flex-direction:column;gap:13px}
+  #hubspotForm fieldset{max-width:none!important;width:100%!important}
+  #hubspotForm .form-columns-2,#hubspotForm .form-columns-3{display:flex;flex-direction:column;gap:13px}
+  #hubspotForm .hs-form-field{width:100%!important;float:none!important;margin:0!important;padding:0!important}
+  #hubspotForm .input{margin-right:0!important}
+  #hubspotForm label{font-family:'Gaegu'!important;font-weight:700!important;font-size:15px!important;color:var(--ink)!important;margin-bottom:5px!important;display:block}
+  #hubspotForm .hs-form-required{color:var(--red)!important}
+  #hubspotForm .hs-field-desc{font-family:'Kalam'!important;font-size:12px!important;color:#8a8a8a!important;margin:0 0 6px!important}
+  #hubspotForm input.hs-input,#hubspotForm select.hs-input,#hubspotForm textarea.hs-input,#hubspotForm .hs-input{
+    width:100%!important;box-sizing:border-box!important;font-family:'Kalam',cursive!important;font-size:16px!important;
+    padding:11px 13px!important;background:#fff!important;color:var(--ink)!important;
+    border:2.5px solid var(--ink)!important;border-radius:11px!important;box-shadow:2px 2px 0 rgba(26,26,26,.15)!important;outline:none!important}
+  #hubspotForm textarea.hs-input{min-height:84px!important;resize:vertical}
+  #hubspotForm input.hs-input:focus,#hubspotForm select.hs-input:focus,#hubspotForm textarea.hs-input:focus{
+    border-color:var(--blue)!important;box-shadow:2px 2px 0 rgba(47,107,255,.28)!important}
+  #hubspotForm .hs-input::placeholder{color:#aaa!important}
+  #hubspotForm .hs-fieldtype-intl-phone .hs-input{width:auto!important}
+  #hubspotForm ul.hs-error-msgs{list-style:none!important;margin:4px 0 0!important;padding:0!important}
+  #hubspotForm .hs-error-msg,#hubspotForm label.hs-error-msg{color:var(--red)!important;font-family:'Kalam'!important;font-size:13px!important}
+  #hubspotForm .hs-button,#hubspotForm input[type=submit].hs-button,#hubspotForm .actions input[type=submit]{
+    display:block!important;width:100%!important;cursor:pointer!important;font-family:'Gaegu'!important;font-weight:700!important;font-size:20px!important;
+    margin-top:6px!important;background:var(--blue)!important;color:#fff!important;border:2.5px solid var(--ink)!important;border-radius:12px!important;
+    padding:13px!important;box-shadow:3px 3px 0 var(--ink)!important;transition:transform .08s,box-shadow .08s!important;text-transform:none!important}
+  #hubspotForm .hs-button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)!important}
+  #hubspotForm .hs-button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)!important}
+  #hubspotForm .legal-consent-container,#hubspotForm .hs-richtext,#hubspotForm .hs-richtext p{font-family:'Kalam'!important;font-size:12px!important;color:#888!important;line-height:1.45!important}
+  #hubspotForm .legal-consent-container a,#hubspotForm .hs-richtext a{color:var(--blue)!important}
 
   /* character animations */
   .figure{transform-box:fill-box;transform-origin:50% 100%}
@@ -265,6 +279,11 @@
     <p class="sc-title">Where your team sits on the legal-ops maturity curve</p>
     <div class="scorecard" id="scorecard"></div>
     <p class="endmood" id="endMoodLine"></p>
+    <div class="end-cta" id="endCta">
+      <h3 class="end-cta-head" id="endCtaHead"></h3>
+      <p class="end-cta-sub" id="endCtaSub"></p>
+      <button class="end-cta-btn" id="bookBtn">Book a walkthrough</button>
+    </div>
     <button class="next again-btn" id="againBtn">Play again</button>
   </div>
 
@@ -274,7 +293,7 @@
     <p class="gate-sub">You&rsquo;ve made all five calls. Unlock exactly how your team stacks up against <b id="gateCount">other legal teams</b>, pillar by pillar.</p>
     <div class="gate-chips" id="gateChips"></div>
     <div id="hubspotForm" class="hsform-wrap"><span class="hs-loading">loading&hellip;</span></div>
-    <p class="gate-note">Want a proper walkthrough? Tick &ldquo;I want a demo&rdquo; in the form and we&rsquo;ll set you up.</p>
+    <p class="gate-note">Submit to unlock your results and see exactly how you compare, pillar by pillar.</p>
   </div>
   </div>
   <div class="credit">Music: &ldquo;Monkeys Spinning Monkeys&rdquo; by Kevin MacLeod &middot; <a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a> &middot; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
@@ -841,6 +860,20 @@ function showEnd(){
 
   const ml=document.getElementById('endMoodLine');
   ml.innerHTML='Your lawyer finished the year <span style="color:'+MOOD_COLORS[energy]+'">'+MOODS[energy]+'</span> &middot; '+mature+'/5 pillars running like they should.';
+
+  // result-aware next-steps CTA
+  const reactive=ORDER.filter(p=>pillarResult[p] && !pillarResult[p].mature);
+  const ctaHeadEl=document.getElementById('endCtaHead');
+  const ctaSubEl=document.getElementById('endCtaSub');
+  if(reactive.length===0){
+    if(ctaHeadEl) ctaHeadEl.textContent='You already run the playbook.';
+    if(ctaSubEl) ctaSubEl.innerHTML='See how Checkbox keeps it effortless as the team scales, and where the last of the manual work goes.';
+  } else {
+    const names = reactive.length===1 ? reactive[0]
+      : reactive.slice(0,-1).join(', ')+' and '+reactive[reactive.length-1];
+    if(ctaHeadEl) ctaHeadEl.textContent='You\u2019re still reactive on '+reactive.length+' of 5.';
+    if(ctaSubEl) ctaSubEl.innerHTML='See exactly how Checkbox turns <b>'+names+'</b> into a system, on your own stack.';
+  }
 }
 
 function resetGame(){
@@ -919,6 +952,7 @@ function stopCycle(){ if(startTimer){ clearInterval(startTimer); startTimer=null
 document.getElementById('againBtn').addEventListener('click', resetGame);
 document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
+document.getElementById('bookBtn').addEventListener('click', function(){ if(window.bookDemo) window.bookDemo(); });
 
 /* ---------- mount Checkbox's HubSpot form (Chili Piper routing handled below) ---------- */
 let hsMounted=false, hsTries=0;
@@ -974,16 +1008,10 @@ startAudio();         // default on; if the browser blocks autoplay, the first i
   var cpRouterName = "inbound-router";
   var lead = {};
   var cpHubspotFormIDs = ["ad82bdab-9ec9-4e52-9c1e-690b6137f680"];
-  /* true if any submitted field looks like a "want a demo" opt-in with a truthy value */
-  function wantsDemo(l){
-    for (var k in l){
-      if (/demo/i.test(k)){
-        var v = ('' + l[k]).trim().toLowerCase();
-        if (v && v!=='false' && v!=='no' && v!=='0' && v!=='off' && v!=='undefined') return true;
-      }
-    }
-    return false;
-  }
+  /* the results-page "Book a walkthrough" button calls this with the captured lead */
+  window.bookDemo = function(){
+    try { ChiliPiper.submit(cpTenantDomain, cpRouterName, { map: true, lead: lead }); } catch (e) {}
+  };
   window.addEventListener("message", function (event) {
     if (cpHubspotFormIDs.length > 0 && (!event.data || !cpHubspotFormIDs.includes(event.data.id))) return;
     if (event.data.type === "hsFormCallback") {
@@ -994,10 +1022,7 @@ startAudio();         // default on; if the browser blocks autoplay, the first i
         }
         if (Object.keys(lead).length <= 1) { lead = event.data.data; }
       } else if (event.data.eventName === "onFormSubmitted") {
-        try { if (window.revealResults) window.revealResults(); } catch (e) {}       // unlock the comparison
-        if (wantsDemo(lead)) {                                                        // only book if they asked for a demo
-          try { ChiliPiper.submit(cpTenantDomain, cpRouterName, { map: true, lead: lead }); } catch (e) {}
-        }
+        try { if (window.revealResults) window.revealResults(); } catch (e) {}       // unlock the comparison for everyone
         try { if (window.navattic && window.navattic.identify) window.navattic.identify({ email: lead.email }); } catch (e) {}
       }
     }
