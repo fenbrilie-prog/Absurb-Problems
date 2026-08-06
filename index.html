@@ -147,37 +147,30 @@
   .rchip{font-family:'Kalam';font-size:12px;background:#fff;border:1.5px solid var(--amber);color:#8a5a12;border-radius:20px;padding:3px 10px}
   .rchip.good{border-color:var(--green);color:#1f7a4d}
 
-  .hsform-wrap{max-width:460px;margin:0 auto;text-align:left}
+  .hsform-wrap{max-width:600px;margin:0 auto;text-align:left}
   .cta-fallback{display:inline-block;font-family:'Gaegu';font-weight:700;font-size:17px;background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:12px 22px;text-decoration:none;box-shadow:3px 3px 0 var(--ink)}
-  .hs-loading{display:block;text-align:center;font-family:'Kalam';font-size:14px;color:#aab;padding:14px 0}
-  /* force the doodle theme over HubSpot's injected styles */
-  #hubspotForm .hs-form{display:flex!important;flex-direction:column;gap:13px}
-  #hubspotForm fieldset{max-width:none!important;width:100%!important}
-  #hubspotForm .form-columns-2,#hubspotForm .form-columns-3{display:flex;flex-direction:column;gap:13px}
-  #hubspotForm .hs-form-field{width:100%!important;float:none!important;margin:0!important;padding:0!important}
-  #hubspotForm .input{margin-right:0!important}
-  #hubspotForm label{font-family:'Gaegu'!important;font-weight:700!important;font-size:15px!important;color:var(--ink)!important;margin-bottom:5px!important;display:block}
-  #hubspotForm .hs-form-required{color:var(--red)!important}
-  #hubspotForm .hs-field-desc{font-family:'Kalam'!important;font-size:12px!important;color:#8a8a8a!important;margin:0 0 6px!important}
-  #hubspotForm input.hs-input,#hubspotForm select.hs-input,#hubspotForm textarea.hs-input,#hubspotForm .hs-input{
-    width:100%!important;box-sizing:border-box!important;font-family:'Kalam',cursive!important;font-size:16px!important;
-    padding:11px 13px!important;background:#fff!important;color:var(--ink)!important;
-    border:2.5px solid var(--ink)!important;border-radius:11px!important;box-shadow:2px 2px 0 rgba(26,26,26,.15)!important;outline:none!important}
-  #hubspotForm textarea.hs-input{min-height:84px!important;resize:vertical}
-  #hubspotForm input.hs-input:focus,#hubspotForm select.hs-input:focus,#hubspotForm textarea.hs-input:focus{
-    border-color:var(--blue)!important;box-shadow:2px 2px 0 rgba(47,107,255,.28)!important}
-  #hubspotForm .hs-input::placeholder{color:#aaa!important}
-  #hubspotForm .hs-fieldtype-intl-phone .hs-input{width:auto!important}
-  #hubspotForm ul.hs-error-msgs{list-style:none!important;margin:4px 0 0!important;padding:0!important}
-  #hubspotForm .hs-error-msg,#hubspotForm label.hs-error-msg{color:var(--red)!important;font-family:'Kalam'!important;font-size:13px!important}
-  #hubspotForm .hs-button,#hubspotForm input[type=submit].hs-button,#hubspotForm .actions input[type=submit]{
-    display:block!important;width:100%!important;cursor:pointer!important;font-family:'Gaegu'!important;font-weight:700!important;font-size:20px!important;
-    margin-top:6px!important;background:var(--blue)!important;color:#fff!important;border:2.5px solid var(--ink)!important;border-radius:12px!important;
-    padding:13px!important;box-shadow:3px 3px 0 var(--ink)!important;transition:transform .08s,box-shadow .08s!important;text-transform:none!important}
-  #hubspotForm .hs-button:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)!important}
-  #hubspotForm .hs-button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)!important}
-  #hubspotForm .legal-consent-container,#hubspotForm .hs-richtext,#hubspotForm .hs-richtext p{font-family:'Kalam'!important;font-size:12px!important;color:#888!important;line-height:1.45!important}
-  #hubspotForm .legal-consent-container a,#hubspotForm .hs-richtext a{color:var(--blue)!important}
+  .lead-form{max-width:600px;margin:0 auto;text-align:left}
+  .lf-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .lf-field{display:flex;flex-direction:column;margin-bottom:14px}
+  .lf-row .lf-field{margin-bottom:0}
+  .lf-field.lf-full{grid-column:1 / -1}
+  .lead-form label{font-family:'Gaegu';font-weight:700;font-size:15px;color:var(--ink);margin-bottom:4px}
+  .lead-form .req{color:var(--red);margin-left:2px}
+  .lf-hint{font-family:'Kalam';font-size:12px;color:#8a8a8a;margin:-2px 0 5px}
+  .lead-form input,.lead-form select,.lead-form textarea{
+    width:100%;box-sizing:border-box;font-family:'Kalam',cursive;font-size:16px;padding:11px 13px;
+    background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:11px;box-shadow:2px 2px 0 rgba(26,26,26,.15);outline:none}
+  .lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{border-color:var(--blue);box-shadow:2px 2px 0 rgba(47,107,255,.28)}
+  .lead-form textarea{min-height:92px;resize:vertical}
+  .lead-form input::placeholder,.lead-form textarea::placeholder{color:#aaa}
+  .lf-consent{font-family:'Kalam';font-size:12px;color:#888;line-height:1.45;margin:2px 0 12px}
+  .lf-consent a{color:var(--blue)}
+  .lf-error{font-family:'Kalam';font-size:13.5px;color:var(--red);min-height:16px;margin-bottom:6px;text-align:center}
+  .lf-submit{display:block;width:100%;font-family:'Gaegu';font-weight:700;font-size:20px;background:var(--blue);color:#fff;border:2.5px solid var(--ink);border-radius:12px;padding:14px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+  .lf-submit:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+  .lf-submit:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .lf-submit:disabled{opacity:.55;cursor:default;transform:none;box-shadow:3px 3px 0 var(--ink)}
+  @media(max-width:560px){ .lf-row{grid-template-columns:1fr;gap:0} .lf-row .lf-field{margin-bottom:14px} }
 
   /* character animations */
   .figure{transform-box:fill-box;transform-origin:50% 100%}
@@ -292,7 +285,45 @@
     <h2 class="gate-title">See how you compare</h2>
     <p class="gate-sub">You&rsquo;ve made all five calls. Unlock exactly how your team stacks up against <b id="gateCount">other legal teams</b>, pillar by pillar.</p>
     <div class="gate-chips" id="gateChips"></div>
-    <div id="hubspotForm" class="hsform-wrap"><span class="hs-loading">loading&hellip;</span></div>
+    <form id="leadForm" class="lead-form" novalidate>
+      <div class="lf-row">
+        <div class="lf-field"><label>First name<span class="req">*</span></label><input name="firstname" type="text" autocomplete="given-name" required></div>
+        <div class="lf-field"><label>Last name<span class="req">*</span></label><input name="lastname" type="text" autocomplete="family-name" required></div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-field"><label>Business email<span class="req">*</span></label><input name="email" type="email" autocomplete="email" required></div>
+        <div class="lf-field"><label>Job title<span class="req">*</span></label><input name="jobtitle" type="text" autocomplete="organization-title" required></div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-field"><label>Company size<span class="req">*</span></label><span class="lf-hint">Number of employees</span><input name="numberofemployees" type="number" min="0" required></div>
+        <div class="lf-field"><label>Global legal team size<span class="req">*</span></label><span class="lf-hint">Attorneys, paralegals, legal ops, etc.</span><input name="company_size_of_legal_team" type="number" min="0" required></div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-field"><label>Company name<span class="req">*</span></label><input name="company" type="text" autocomplete="organization" required></div>
+        <div class="lf-field"><label>Contact number<span class="req">*</span></label><input name="phone" type="tel" autocomplete="tel" required></div>
+      </div>
+      <div class="lf-field lf-full">
+        <label>Country or region<span class="req">*</span></label>
+        <select name="country_or_region" required>
+          <option value="">Please select</option>
+          <option value="Australia">Australia</option>
+          <option value="Canada">Canada</option>
+          <option value="United States">United States</option>
+          <option value="Africa">Other - Africa</option>
+          <option value="Asia/Pacific Region">Other - Asia / Oceania</option>
+          <option value="Europe">Other - Europe</option>
+          <option value="North America">Other - North America</option>
+          <option value="South America">Other - South America</option>
+        </select>
+      </div>
+      <div class="lf-field lf-full">
+        <label>How can we help?<span class="req">*</span></label>
+        <textarea name="message" required placeholder="Please describe your reason for interest, use-case or problem, and current tools that you are currently using or considering."></textarea>
+      </div>
+      <div class="lf-consent">By supplying my contact information, I authorize Checkbox to contact me with communications. See our <a href="https://checkbox.ai/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> for more details and opt-out at any time.</div>
+      <div class="lf-error" id="lfError"></div>
+      <button type="submit" class="lf-submit" id="lfSubmit">Unlock my results</button>
+    </form>
     <p class="gate-note">Submit to unlock your results and see exactly how you compare, pillar by pillar.</p>
   </div>
   </div>
@@ -903,7 +934,6 @@ function showGate(){
   sceneEl.innerHTML=sceneSVG(null,true);      // final character as a teaser
   paintEnergy();
   populateGate();
-  mountHubspotForm();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 /* called by the HubSpot submit listener (below) once they opt in */
@@ -954,79 +984,48 @@ document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
 document.getElementById('bookBtn').addEventListener('click', function(){ if(window.bookDemo) window.bookDemo(); });
 
-/* ---------- mount Checkbox's HubSpot form (Chili Piper routing handled below) ---------- */
-let hsMounted=false, hsTries=0;
-function mountHubspotForm(){
-  if(hsMounted) return;
-  const target=document.getElementById('hubspotForm');
-  if(!target) return;
-  if(window.hbspt && window.hbspt.forms){
-    hsMounted=true;
-    target.innerHTML='';
+/* ---------- custom gate form: submits straight to HubSpot, then unlocks results ---------- */
+const HS_PORTAL="4351004", HS_FORM="ad82bdab-9ec9-4e52-9c1e-690b6137f680";
+window.bookDemo=function(){
+  try{ if(window.ChiliPiper) window.ChiliPiper.submit("checkbox","inbound-router",{ map:true, lead: window.__lead || {} }); }catch(e){}
+};
+(function(){
+  const form=document.getElementById('leadForm');
+  if(!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const errEl=document.getElementById('lfError'); errEl.textContent='';
+    if(!form.checkValidity()){ form.reportValidity(); errEl.textContent='Please complete all required fields.'; return; }
+    const btn=document.getElementById('lfSubmit'); btn.disabled=true; const label=btn.textContent; btn.textContent='Unlocking\u2026';
+    const fd=new FormData(form); const fields=[]; const leadObj={};
+    fd.forEach((v,k)=>{ if(v!=='' && v!=null){ fields.push({name:k,value:String(v)}); leadObj[k]=String(v); } });
     try{
-      window.hbspt.forms.create({
-        region:"na1",
-        portalId:"4351004",
-        formId:"ad82bdab-9ec9-4e52-9c1e-690b6137f680",
-        target:"#hubspotForm",
-        onFormSubmit:function($form){
-          try{
-            var fn = ($form && $form[0] && $form[0].fullName) ? $form[0].fullName.value : '';
-            var em = ($form && $form[0] && $form[0].email) ? $form[0].email.value : '';
-            if(window.navattic && window.navattic.identify){
-              window.navattic.identify({'user.fullName':fn,'user.email':em});
-            }
-          }catch(e){}
-        }
+      const res=await fetch('https://api.hsforms.com/submissions/v3/integration/submit/'+HS_PORTAL+'/'+HS_FORM,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ fields:fields, context:{ pageUri:location.href, pageName:document.title } })
       });
-    }catch(e){ hsMounted=false; }
-    return;
-  }
-  hsTries++;
-  if(hsTries<16){ setTimeout(mountHubspotForm, 300); }
-  else {
-    target.innerHTML='<button class="cta-fallback" id="gateFallback">See my results &rarr;</button>';
-    const fb=document.getElementById('gateFallback');
-    if(fb) fb.addEventListener('click', function(){ if(window.revealResults) window.revealResults(); });
-  }
-}
+      if(!res.ok){
+        let msg='Something went wrong. Please check your details and try again.';
+        try{ const j=await res.json(); if(j&&j.errors&&j.errors[0]&&j.errors[0].message) msg=j.errors[0].message; }catch(_){}
+        throw new Error(msg);
+      }
+      window.__lead=leadObj;
+      try{ if(window.navattic&&window.navattic.identify) window.navattic.identify({'user.email':leadObj.email,'user.fullName':((leadObj.firstname||'')+' '+(leadObj.lastname||'')).trim()}); }catch(_){}
+      if(window.revealResults) window.revealResults();
+    }catch(err){
+      errEl.textContent = err.message || 'Submission failed. Please try again.';
+      btn.disabled=false; btn.textContent=label;
+    }
+  });
+})();
 
 screenStart();
-mountHubspotForm();   // start loading in the background during gameplay, so it's ready at the end
 updateSoundIcon();
 startAudio();         // default on; if the browser blocks autoplay, the first interaction starts it
 ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev, startAudio, {passive:true}));
 </script>
 
-<!-- Checkbox marketing stack: HubSpot form embed + Chili Piper inbound routing -->
-<script charset="utf-8" src="https://js.hsforms.net/forms/embed/v2.js"></script>
+<!-- Chili Piper booking (fired from the results page "Book a walkthrough" button) -->
 <script src="https://js.chilipiper.com/marketing.js"></script>
-<script>
-  /* When the HubSpot form is submitted, hand the lead to Chili Piper's inbound router
-     so the prospect can book a meeting immediately. */
-  var cpTenantDomain = "checkbox";
-  var cpRouterName = "inbound-router";
-  var lead = {};
-  var cpHubspotFormIDs = ["ad82bdab-9ec9-4e52-9c1e-690b6137f680"];
-  /* the results-page "Book a walkthrough" button calls this with the captured lead */
-  window.bookDemo = function(){
-    try { ChiliPiper.submit(cpTenantDomain, cpRouterName, { map: true, lead: lead }); } catch (e) {}
-  };
-  window.addEventListener("message", function (event) {
-    if (cpHubspotFormIDs.length > 0 && (!event.data || !cpHubspotFormIDs.includes(event.data.id))) return;
-    if (event.data.type === "hsFormCallback") {
-      if (event.data.eventName === "onFormSubmit") {
-        for (var key in event.data.data) {
-          if (Array.isArray(event.data.data[key].value)) { event.data.data[key].value = event.data.data[key].value.toString().replaceAll(",", ";"); }
-          lead[event.data.data[key].name] = event.data.data[key].value;
-        }
-        if (Object.keys(lead).length <= 1) { lead = event.data.data; }
-      } else if (event.data.eventName === "onFormSubmitted") {
-        try { if (window.revealResults) window.revealResults(); } catch (e) {}       // unlock the comparison for everyone
-        try { if (window.navattic && window.navattic.identify) window.navattic.identify({ email: lead.email }); } catch (e) {}
-      }
-    }
-  });
-</script>
 </body>
 </html>
