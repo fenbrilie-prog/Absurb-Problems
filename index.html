@@ -29,6 +29,8 @@
   .start-fig svg{width:100%;height:auto;display:block}
   .start-mood{font-family:'Gaegu';font-weight:700;font-size:21px;min-height:26px;margin:2px 0 4px;transition:color .3s}
   .start-sub{font-size:16px;line-height:1.5;color:#555;max-width:44ch;margin:8px auto 24px}
+  .start-count{font-family:'Kalam';font-size:14px;color:#888;margin:-12px auto 20px;min-height:18px}
+  .start-count b{font-family:'Gaegu';font-size:16px;color:var(--blue)}
   .start-btn{font-family:'Gaegu';font-weight:700;font-size:22px;background:var(--blue);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 44px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .08s}
   .start-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
   .start-btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
@@ -112,6 +114,8 @@
   .cmp-verdict{font-family:'Gaegu';font-weight:700;font-size:21px;text-align:center;color:var(--ink);line-height:1.2;margin-top:2px}
   .cmp-verdict.good{color:var(--green)}
   .cmp-verdict.bad{color:var(--amber)}
+  .cmp-count{font-family:'Kalam';font-size:13px;color:#888;text-align:center;margin-top:6px}
+  .cmp-count b{color:var(--ink);font-family:'Gaegu';font-size:15px}
   .cmp-solo{text-align:center}
   .sc-row{padding:12px 15px 13px;border:2.5px solid var(--ink);border-radius:12px;margin-bottom:11px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
   .sc-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
@@ -256,6 +260,7 @@
     <div class="start-fig" id="startFig"></div>
     <div class="start-mood" id="startMood"></div>
     <p class="start-sub">Every legal team lands somewhere on this scale. Answer five quick questions to find out where yours sits, and how you compare to everyone else who&rsquo;s played.</p>
+    <div class="start-count" id="startCount"></div>
     <button class="start-btn" id="startBtn">Start</button>
   </div>
 
@@ -751,6 +756,20 @@ async function castVote(pillar, choice){
   }catch(e){ return null; }         // offline / not deployed → use seeds
 }
 
+let teamTotal = 0;                  // how many teams have played (max pillar sample)
+async function fetchTeamCount(){
+  try{
+    const r = await fetch(VOTE_API); if(!r.ok) return 0;
+    const j = await r.json(); let m=0;
+    for(const k in j){ if(j[k] && typeof j[k].a==='number'){ const t=(j[k].a||0)+(j[k].b||0); if(t>m) m=t; } }
+    return m;
+  }catch(e){ return 0; }
+}
+function paintTeamCount(){
+  const el=document.getElementById('startCount');
+  if(el) el.innerHTML = teamTotal>=3 ? ('<b>'+teamTotal.toLocaleString()+'</b> legal teams have already compared') : '';
+}
+
 function pcts(L, live){
   if(live){
     const t=live.a+live.b;
@@ -876,10 +895,10 @@ function showEnd(){
   document.getElementById('endBlurb').innerHTML=blurb;
 
   // ---- crowd comparison ----
-  let crowdSum=0, dataCount=0;
+  let crowdSum=0, dataCount=0, teamN=0;
   ORDER.forEach(p=>{
     const r=pillarResult[p]; if(!r) return;
-    if(r.live && r.n>=3){ r._matPct = r.mature ? r.samePct : (100 - r.samePct); r._has=true; crowdSum += r._matPct/100; dataCount++; }
+    if(r.live && r.n>=3){ r._matPct = r.mature ? r.samePct : (100 - r.samePct); r._has=true; crowdSum += r._matPct/100; dataCount++; if(r.n>teamN) teamN=r.n; }
     else { r._has=false; }
   });
   const crowdScore = dataCount>0 ? Math.max(0,Math.min(5, Math.round(crowdSum * (5/dataCount)))) : null;
@@ -900,9 +919,12 @@ function showEnd(){
           '<div class="cmp-x">vs</div>'+
           '<div class="cmp-side"><span class="cmp-num">'+crowdScore+'<span>/5</span></span><span class="cmp-cap">Typical team</span></div>'+
         '</div>'+
-        '<div class="cmp-verdict '+verdict[1]+'">'+verdict[0]+'</div>';
+        '<div class="cmp-verdict '+verdict[1]+'">'+verdict[0]+'</div>'+
+        (teamN>=3 ? '<div class="cmp-count">measured against <b>'+teamN.toLocaleString()+'</b> legal teams and counting</div>' : '');
     }
   }
+  const scTitle=document.querySelector('.sc-title');
+  if(scTitle) scTitle.textContent = teamN>=3 ? ('How you compare to '+teamN.toLocaleString()+' legal teams') : 'How you compare, pillar by pillar';
 
   // per-pillar: where you stand vs everyone
   const sc=document.getElementById('scorecard'); sc.innerHTML='';
@@ -1059,6 +1081,7 @@ window.bookDemo=function(){
 })();
 
 screenStart();
+fetchTeamCount().then(n=>{ teamTotal=n; paintTeamCount(); });
 updateSoundIcon();
 startAudio();         // default on; if the browser blocks autoplay, the first interaction starts it
 ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev, startAudio, {passive:true}));
