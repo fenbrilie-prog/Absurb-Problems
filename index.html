@@ -117,8 +117,12 @@
   .cmp-count{font-family:'Kalam';font-size:13px;color:#888;text-align:center;margin-top:6px}
   .cmp-count b{color:var(--ink);font-family:'Gaegu';font-size:15px}
   .cmp-solo{text-align:center}
-  .sc-row{padding:12px 15px 13px;border:2.5px solid var(--ink);border-radius:12px;margin-bottom:11px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
-  .sc-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+  .sc-row{display:flex;gap:12px;align-items:flex-start;padding:12px 15px 13px;border:2.5px solid var(--ink);border-radius:12px;margin-bottom:11px;background:#fffdf5;box-shadow:2px 2px 0 var(--ink)}
+  .sc-ico{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:#eef0f4;border:2.5px solid var(--ink);display:flex;align-items:center;justify-content:center;margin-top:3px}
+  .sc-ico svg{width:26px;height:26px;display:block}
+  .sc-body{flex:1;min-width:0}
+  .sc-desc{font-family:'Kalam';font-size:12.5px;color:#777;margin:2px 0 8px;line-height:1.3}
+  .sc-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:2px}
   .sc-top .sc-pill{font-family:'Gaegu';font-weight:700;font-size:16px}
   .sc-top .sc-you{font-family:'Gaegu';font-weight:700;font-size:16px}
   .sc-mark{margin-right:5px;font-size:15px}
@@ -294,7 +298,7 @@
     <div class="end-cta" id="endCta">
       <h3 class="end-cta-head" id="endCtaHead"></h3>
       <p class="end-cta-sub" id="endCtaSub"></p>
-      <button class="end-cta-btn" id="bookBtn">Try Checkbox</button>
+      <button class="end-cta-btn" id="bookBtn">Book a demo</button>
     </div>
     <button class="next again-btn" id="againBtn">Play again</button>
   </div>
@@ -333,11 +337,7 @@
           <option value="Other">Other</option>
         </select>
       </div>
-      <div class="lf-field lf-full">
-        <label>How can we help?<span class="req">*</span></label>
-        <textarea name="message" required placeholder="Please describe your reason for interest, use-case or problem, and current tools that you are currently using or considering."></textarea>
-      </div>
-      <div class="lf-consent">By supplying my contact information, I authorize Checkbox to contact me with communications. See our <a href="https://checkbox.ai/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> for more details and opt-out at any time.</div>
+      <div class="lf-consent">By supplying my contact information, I authorize Checkbox to contact me with communications. See our <a href="https://www.checkbox.ai/legal/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> for more details and opt-out at any time.</div>
       <div class="lf-error" id="lfError"></div>
       <button type="submit" class="lf-submit" id="lfSubmit">Unlock my results</button>
     </form>
@@ -345,6 +345,22 @@
   </div>
   </div>
   <div class="credit">Music: &ldquo;Monkeys Spinning Monkeys&rdquo; by Kevin MacLeod &middot; <a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a> &middot; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+</div>
+
+<div class="modal" id="demoModal">
+  <div class="modal-card">
+    <button class="modal-close" id="demoClose" aria-label="Close">&times;</button>
+    <h4 class="modal-head">Book a demo</h4>
+    <p class="modal-sub">We&rsquo;ve already got your details from the quiz. Just tell us how we can help and we&rsquo;ll set up a time.</p>
+    <form id="demoForm" class="lead-form" novalidate>
+      <div class="lf-field lf-full">
+        <label>How can we help?<span class="req">*</span></label>
+        <textarea name="message" required placeholder="What are you trying to solve, your use-case, and the tools you use now?"></textarea>
+      </div>
+      <div class="lf-error" id="demoErr"></div>
+      <button type="submit" class="lf-submit" id="demoSubmit">Request demo</button>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -927,12 +943,20 @@ function showEnd(){
   if(scTitle) scTitle.textContent = teamN>=3 ? ('How you compare to '+teamN.toLocaleString()+' legal teams') : 'How you compare, pillar by pillar';
 
   // per-pillar: where you stand vs everyone
+  const PILLAR_DESC = {
+    Intake:'Every request arrives through one front door',
+    Triage:'Work is prioritised by risk and complexity',
+    Automation:'Routine work resolves itself unless judgment is needed',
+    Contracts:'Every contract lives in one searchable place',
+    Visibility:'Cycle times, volumes and bottlenecks are measured'
+  };
   const sc=document.getElementById('scorecard'); sc.innerHTML='';
   ORDER.forEach(p=>{
     const r=pillarResult[p]; if(!r) return;
     const word = r.mature ? r.good : r.bad;
     const mword = r.good.toLowerCase();
     const mark = r.mature ? '<span class="sc-mark good">\u2713</span>' : '<span class="sc-mark bad">\u2717</span>';
+    const ic = (DEST[p] && DEST[p].botIcon) ? iconSvg(DEST[p].botIcon) : '';
     let barPct, caption;
     if(r._has){
       barPct = r._matPct;
@@ -943,9 +967,13 @@ function showEnd(){
     const row=document.createElement('div');
     row.className='sc-row '+(r.mature?'good':'bad');
     row.innerHTML=
-      '<div class="sc-top"><span class="sc-pill">'+p+'</span><span class="sc-you">'+mark+word+'</span></div>'+
-      '<div class="sc-barwrap"><div class="sc-bar" data-w="'+barPct+'"></div></div>'+
-      '<div class="sc-crowd'+(r._has?'':' dim')+'">'+caption+'</div>';
+      '<div class="sc-ico">'+ic+'</div>'+
+      '<div class="sc-body">'+
+        '<div class="sc-top"><span class="sc-pill">'+p+'</span><span class="sc-you">'+mark+word+'</span></div>'+
+        '<div class="sc-desc">'+(PILLAR_DESC[p]||'')+'</div>'+
+        '<div class="sc-barwrap"><div class="sc-bar" data-w="'+barPct+'"></div></div>'+
+        '<div class="sc-crowd'+(r._has?'':' dim')+'">'+caption+'</div>'+
+      '</div>';
     sc.appendChild(row);
   });
   requestAnimationFrame(()=>{ sc.querySelectorAll('.sc-bar').forEach(b=>b.style.width=b.dataset.w+'%'); });
@@ -1043,11 +1071,38 @@ function stopCycle(){ if(startTimer){ clearInterval(startTimer); startTimer=null
 document.getElementById('againBtn').addEventListener('click', resetGame);
 document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
-const DEMO_URL="https://www.checkbox.ai/try-checkbox";   // where "Try Checkbox" sends people (opens in a new tab)
-document.getElementById('bookBtn').addEventListener('click', function(){ window.open(DEMO_URL,'_blank','noopener'); });
+const DEMO_FORM_ID="ad82bdab-9ec9-4e52-9c1e-690b6137f680";   // your demo request form
+function openDemo(){ document.getElementById('demoModal').classList.add('on'); }
+function closeDemo(){ document.getElementById('demoModal').classList.remove('on'); }
+document.getElementById('bookBtn').addEventListener('click', openDemo);
+document.getElementById('demoClose').addEventListener('click', closeDemo);
+document.getElementById('demoModal').addEventListener('click', function(e){ if(e.target.id==='demoModal') closeDemo(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDemo(); });
+(function(){
+  const form=document.getElementById('demoForm'); if(!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const errEl=document.getElementById('demoErr'); errEl.textContent='';
+    if(!form.checkValidity()){ form.reportValidity(); errEl.textContent='Please tell us how we can help.'; return; }
+    const btn=document.getElementById('demoSubmit'); btn.disabled=true; const lbl=btn.textContent; btn.textContent='Booking\u2026';
+    const lead=Object.assign({}, window.__lead||{});          // the 9 fields carried from the MQL gate
+    lead.message = form.querySelector('[name="message"]').value; // the one new answer
+    const fields=Object.keys(lead).filter(function(k){return lead[k];}).map(function(k){return {name:k,value:String(lead[k])};});
+    try{
+      const res=await fetch('https://api.hsforms.com/submissions/v3/integration/submit/'+HS_PORTAL+'/'+DEMO_FORM_ID,{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ fields:fields, context:{ pageUri:location.href, pageName:document.title } })
+      });
+      if(!res.ok){ let m='Something went wrong. Please try again.'; try{const j=await res.json(); if(j&&j.errors&&j.errors[0]&&j.errors[0].message)m=j.errors[0].message;}catch(_){ } throw new Error(m); }
+      try{ if(window.navattic&&window.navattic.identify) window.navattic.identify({'user.email':lead.email}); }catch(_){}
+      try{ if(window.ChiliPiper) window.ChiliPiper.submit("checkbox","inbound-router",{ map:true, lead: lead }); }catch(_){}
+      btn.textContent='Opening scheduler\u2026';
+    }catch(err){ errEl.textContent=err.message||'Submission failed. Please try again.'; btn.disabled=false; btn.textContent=lbl; }
+  });
+})();
 
 /* ---------- custom gate form: submits straight to HubSpot, then unlocks results ---------- */
-const HS_PORTAL="4351004", HS_FORM="8317ba01-e280-4750-b3dd-70da11c88702";
+const HS_PORTAL="4351004", HS_FORM="52a86514-86e1-41dd-bee4-c0fe6a0c6c6c";
 (function(){
   const form=document.getElementById('leadForm');
   if(!form) return;
@@ -1084,6 +1139,9 @@ updateSoundIcon();
 startAudio();         // default on; if the browser blocks autoplay, the first interaction starts it
 ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev, startAudio, {passive:true}));
 </script>
+
+<!-- Chili Piper (fired directly after the demo form submits) -->
+<script src="https://js.chilipiper.com/marketing.js"></script>
 
 </body>
 </html>
