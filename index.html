@@ -31,6 +31,8 @@
   .start-sub{font-size:16px;line-height:1.5;color:#555;max-width:44ch;margin:8px auto 24px}
   .start-count{font-family:'Kalam';font-size:14px;color:#888;margin:-12px auto 20px;min-height:18px}
   .start-count b{font-family:'Gaegu';font-size:16px;color:var(--blue)}
+  .topcount{font-family:'Kalam';font-size:13px;color:#8a8a8a;margin-top:5px;min-height:16px}
+  .topcount b{font-family:'Gaegu';font-size:15px;color:var(--blue)}
   .start-btn{font-family:'Gaegu';font-weight:700;font-size:22px;background:var(--blue);color:#fff;border:3px solid var(--ink);border-radius:14px;padding:13px 44px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .08s}
   .start-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
   .start-btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
@@ -258,6 +260,7 @@
     <h1>Absurd Legal Team Problems</h1>
     <div class="subtitle" id="subtitle">Five decisions. Find out how your legal team really runs.</div>
     <div class="lvl" id="lvl"><b>Intake</b> · 1 of 5</div>
+    <div class="topcount" id="topCount"></div>
   </div>
 
   <div class="start" id="start">
@@ -302,13 +305,16 @@
     </div>
     <button class="next again-btn" id="againBtn">Play again</button>
   </div>
+  </div>
+  <div class="credit">Music: &ldquo;Monkeys Spinning Monkeys&rdquo; by Kevin MacLeod &middot; <a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a> &middot; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+</div>
 
-  <div class="gate" id="gate">
-    <div class="gate-lead">Answers locked in</div>
-    <h2 class="gate-title">See how you compare</h2>
-    <p class="gate-sub">You&rsquo;ve made all five calls. Unlock exactly how your team stacks up against <b id="gateCount">other legal teams</b>, pillar by pillar.</p>
-    <div class="gate-chips" id="gateChips"></div>
-    <form id="leadForm" class="lead-form" novalidate>
+<div class="modal" id="demoModal">
+  <div class="modal-card">
+    <button class="modal-close" id="demoClose" aria-label="Close">&times;</button>
+    <h4 class="modal-head">Book a demo</h4>
+    <p class="modal-sub">Tell us a bit about your team and we&rsquo;ll set you up with a walkthrough.</p>
+    <form id="demoForm" class="lead-form" novalidate>
       <div class="lf-row">
         <div class="lf-field"><label>First name<span class="req">*</span></label><input name="firstname" type="text" autocomplete="given-name" required></div>
         <div class="lf-field"><label>Last name<span class="req">*</span></label><input name="lastname" type="text" autocomplete="family-name" required></div>
@@ -337,26 +343,11 @@
           <option value="Other">Other</option>
         </select>
       </div>
-      <div class="lf-consent">By supplying my contact information, I authorize Checkbox to contact me with communications. See our <a href="https://www.checkbox.ai/legal/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> for more details and opt-out at any time.</div>
-      <div class="lf-error" id="lfError"></div>
-      <button type="submit" class="lf-submit" id="lfSubmit">Unlock my results</button>
-    </form>
-    <p class="gate-note">Submit to unlock your results and see exactly how you compare, pillar by pillar.</p>
-  </div>
-  </div>
-  <div class="credit">Music: &ldquo;Monkeys Spinning Monkeys&rdquo; by Kevin MacLeod &middot; <a href="https://incompetech.com" target="_blank" rel="noopener">incompetech.com</a> &middot; licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
-</div>
-
-<div class="modal" id="demoModal">
-  <div class="modal-card">
-    <button class="modal-close" id="demoClose" aria-label="Close">&times;</button>
-    <h4 class="modal-head">Book a demo</h4>
-    <p class="modal-sub">We&rsquo;ve already got your details from the quiz. Just tell us how we can help and we&rsquo;ll set up a time.</p>
-    <form id="demoForm" class="lead-form" novalidate>
       <div class="lf-field lf-full">
         <label>How can we help?<span class="req">*</span></label>
         <textarea name="message" required placeholder="What are you trying to solve, your use-case, and the tools you use now?"></textarea>
       </div>
+      <div class="lf-consent">By supplying my contact information, I authorize Checkbox to contact me with communications. See our <a href="https://www.checkbox.ai/legal/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a> for more details and opt-out at any time.</div>
       <div class="lf-error" id="demoErr"></div>
       <button type="submit" class="lf-submit" id="demoSubmit">Request demo</button>
     </form>
@@ -784,6 +775,8 @@ async function fetchTeamCount(){
 function paintTeamCount(){
   const el=document.getElementById('startCount');
   if(el) el.innerHTML = teamTotal>=3 ? ('<b>'+teamTotal.toLocaleString()+'</b> legal teams have already compared') : '';
+  const t=document.getElementById('topCount');
+  if(t) t.innerHTML = teamTotal>=3 ? ('<b>'+teamTotal.toLocaleString()+'</b> legal teams compared so far') : '';
 }
 
 function pcts(L, live){
@@ -859,29 +852,70 @@ function choose(key){
     paintEnergy();
   };
 
-  // 3. reveal the verdict (comparison is gated to the end now)
+  // 3. reveal the verdict + this pillar's comparison
   const reveal=()=>{
     choicesEl.style.display='none';
     verdictEl.innerHTML=opt.verdict;
-    votePromise.then(live=>{ recordCompare(L.pillar,key,live); }); // still records the vote + crowd split for the end
+    renderQCompare(L, key, null);                                   // instant placeholder
+    votePromise.then(live=>{ recordCompare(L.pillar,key,live); renderQCompare(L,key,live); }); // real numbers when they arrive
     outcomeEl.classList.add('on');
-    document.getElementById('nextBtn').textContent = (idx===LEVELS.length-1)?'See how you compare →':'Next →';
+    document.getElementById('nextBtn').textContent = (idx===LEVELS.length-1)?'See my results →':'Next →';
   };
 
   if(reduce){ impact(); reveal(); }
   else { setTimeout(impact, 820); setTimeout(reveal, 1150); }
 }
 
+// one pillar's "you vs everyone" card, shown right after each answer and reused at the end
+const PILLAR_DESC = {
+  Intake:'Every request arrives through one front door',
+  Triage:'Work is prioritised by risk and complexity',
+  Automation:'Routine work resolves itself unless judgment is needed',
+  Contracts:'Every contract lives in one searchable place',
+  Visibility:'Cycle times, volumes and bottlenecks are measured'
+};
+function renderQCompare(L, key, live){
+  const p=pcts(L,live);
+  const mature=(key==='a');
+  const word=mature?L.good:L.bad;
+  const mword=L.good.toLowerCase();
+  const matPct=p.a;                                   // % of teams on the mature option
+  const showData = p.live ? (p.n>=3) : true;
+  const mark=mature?'<span class="sc-mark good">\u2713</span>':'<span class="sc-mark bad">\u2717</span>';
+  const ic=(DEST[L.pillar]&&DEST[L.pillar].botIcon)?iconSvg(DEST[L.pillar].botIcon):'';
+  let caption;
+  if(!showData){ caption='You\u2019re one of the first to answer this'; }
+  else if(mature){ caption='<b>'+matPct+'%</b> of teams are '+mword+', and so are you'; }
+  else { caption='only <b>'+matPct+'%</b> of teams are '+mword+'. You\u2019re not there yet'; }
+  const bar=showData?matPct:0;
+  if(p.live && p.n>teamTotal){ teamTotal=p.n; paintTeamCount(); }   // keep the top count fresh
+  const pl=document.getElementById('peerline');
+  if(pl) pl.innerHTML='';
+  const bx=document.getElementById('bars');
+  if(bx){
+    bx.innerHTML='<div class="sc-row '+(mature?'good':'bad')+'">'+
+      '<div class="sc-ico">'+ic+'</div>'+
+      '<div class="sc-body">'+
+        '<div class="sc-top"><span class="sc-pill">'+L.pillar+'</span><span class="sc-you">'+mark+word+'</span></div>'+
+        '<div class="sc-desc">'+(PILLAR_DESC[L.pillar]||'')+'</div>'+
+        '<div class="sc-barwrap"><div class="sc-bar" data-w="'+bar+'"></div></div>'+
+        '<div class="sc-crowd'+(showData?'':' dim')+'">'+caption+'</div>'+
+      '</div>'+
+    '</div>';
+    requestAnimationFrame(function(){ const b=bx.querySelector('.sc-bar'); if(b) b.style.width=b.dataset.w+'%'; });
+  }
+}
+
 document.getElementById('nextBtn').addEventListener('click',()=>{
   if(idx<LEVELS.length-1){ idx++; sfxAdvance(); renderLevel(); window.scrollTo({top:0,behavior:'smooth'}); }
-  else { sfxReveal(); showGate(); }
+  else { sfxReveal(); showEnd(); }
 });
 
 /* ---------- end ---------- */
 const ORDER = ['Intake','Triage','Automation','Contracts','Visibility'];
 function showEnd(){
   playEl.style.display='none';
-  document.getElementById('gate').style.display='none';
+  const tc=document.getElementById('topCount'); if(tc) tc.style.display='none';
   endEl.classList.add('on');
   sceneEl.innerHTML=sceneSVG(null,true);
   const mature = ORDER.filter(p=>pillarResult[p] && pillarResult[p].mature).length;
@@ -943,13 +977,6 @@ function showEnd(){
   if(scTitle) scTitle.textContent = teamN>=3 ? ('How you compare to '+teamN.toLocaleString()+' legal teams') : 'How you compare, pillar by pillar';
 
   // per-pillar: where you stand vs everyone
-  const PILLAR_DESC = {
-    Intake:'Every request arrives through one front door',
-    Triage:'Work is prioritised by risk and complexity',
-    Automation:'Routine work resolves itself unless judgment is needed',
-    Contracts:'Every contract lives in one searchable place',
-    Visibility:'Cycle times, volumes and bottlenecks are measured'
-  };
   const sc=document.getElementById('scorecard'); sc.innerHTML='';
   ORDER.forEach(p=>{
     const r=pillarResult[p]; if(!r) return;
@@ -999,44 +1026,16 @@ function showEnd(){
 function resetGame(){
   energy=5; judgment=0; idx=0;
   ORDER.forEach(p=>delete pillarResult[p]);
-  endEl.classList.remove('on'); document.getElementById('gate').style.display='none'; playEl.style.display='block';
+  endEl.classList.remove('on'); playEl.style.display='block';
   renderLevel(); window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ---------- gate: the locked form wall before results ---------- */
-function populateGate(){
-  let n=0; ORDER.forEach(p=>{ const r=pillarResult[p]; if(r && r.n>n) n=r.n; });
-  const countEl=document.getElementById('gateCount');
-  if(countEl) countEl.textContent = n>=3 ? (n.toLocaleString()+' other legal teams') : 'other legal teams';
-  const reactive=ORDER.filter(p=>pillarResult[p] && !pillarResult[p].mature);
-  const chips=document.getElementById('gateChips');
-  if(chips){
-    chips.innerHTML = reactive.length
-      ? '<span class="gate-chip-lead">You&rsquo;ll see where you stand on:</span>'+reactive.map(p=>'<span class="rchip">'+p+'</span>').join('')
-      : '<span class="rchip good">all five pillars mature</span>';
-  }
-}
-function showGate(){
-  playEl.style.display='none';
-  endEl.classList.remove('on');
-  document.getElementById('gate').style.display='block';
-  sceneEl.innerHTML=sceneSVG(null,true);      // final character as a teaser
-  paintEnergy();
-  populateGate();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-/* called by the HubSpot submit listener (below) once they opt in */
-window.revealResults=function(){
-  document.getElementById('gate').style.display='none';
-  showEnd();
-  window.scrollTo({top:0,behavior:'smooth'});
-};
 function screenStart(){
   document.getElementById('start').style.display='';
-  document.getElementById('gate').style.display='none';
   document.querySelector('.energy').style.display='none';
   sceneEl.style.display='none';
   lvlEl.style.display='none';
+  const tc=document.getElementById('topCount'); if(tc) tc.style.display='none';
   playEl.style.display='none';
   endEl.classList.remove('on');
   startCycle();
@@ -1047,6 +1046,7 @@ function beginGame(){
   document.querySelector('.energy').style.display='';
   sceneEl.style.display='';
   lvlEl.style.display='';
+  const tc=document.getElementById('topCount'); if(tc) tc.style.display='';
   resetGame();
 }
 
@@ -1071,7 +1071,7 @@ function stopCycle(){ if(startTimer){ clearInterval(startTimer); startTimer=null
 document.getElementById('againBtn').addEventListener('click', resetGame);
 document.getElementById('startBtn').addEventListener('click', beginGame);
 document.getElementById('soundBtn').addEventListener('click', toggleSound);
-const DEMO_FORM_ID="ad82bdab-9ec9-4e52-9c1e-690b6137f680";   // your demo request form
+const DEMO_FORM_ID="ad82bdab-9ec9-4e52-9c1e-690b6137f680", HS_PORTAL="4351004";   // your demo request form
 function openDemo(){ document.getElementById('demoModal').classList.add('on'); }
 function closeDemo(){ document.getElementById('demoModal').classList.remove('on'); }
 document.getElementById('bookBtn').addEventListener('click', openDemo);
@@ -1083,11 +1083,10 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDemo
   form.addEventListener('submit', async function(e){
     e.preventDefault();
     const errEl=document.getElementById('demoErr'); errEl.textContent='';
-    if(!form.checkValidity()){ form.reportValidity(); errEl.textContent='Please tell us how we can help.'; return; }
+    if(!form.checkValidity()){ form.reportValidity(); errEl.textContent='Please complete all required fields.'; return; }
     const btn=document.getElementById('demoSubmit'); btn.disabled=true; const lbl=btn.textContent; btn.textContent='Booking\u2026';
-    const lead=Object.assign({}, window.__lead||{});          // the 9 fields carried from the MQL gate
-    lead.message = form.querySelector('[name="message"]').value; // the one new answer
-    const fields=Object.keys(lead).filter(function(k){return lead[k];}).map(function(k){return {name:k,value:String(lead[k])};});
+    const fd=new FormData(form); const lead={}; const fields=[];
+    fd.forEach(function(v,k){ if(v!=='' && v!=null){ fields.push({name:k,value:String(v)}); lead[k]=String(v); } });
     try{
       const res=await fetch('https://api.hsforms.com/submissions/v3/integration/submit/'+HS_PORTAL+'/'+DEMO_FORM_ID,{
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -1098,38 +1097,6 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeDemo
       try{ if(window.ChiliPiper) window.ChiliPiper.submit("checkbox","inbound-router",{ map:true, lead: lead }); }catch(_){}
       btn.textContent='Opening scheduler\u2026';
     }catch(err){ errEl.textContent=err.message||'Submission failed. Please try again.'; btn.disabled=false; btn.textContent=lbl; }
-  });
-})();
-
-/* ---------- custom gate form: submits straight to HubSpot, then unlocks results ---------- */
-const HS_PORTAL="4351004", HS_FORM="52a86514-86e1-41dd-bee4-c0fe6a0c6c6c";
-(function(){
-  const form=document.getElementById('leadForm');
-  if(!form) return;
-  form.addEventListener('submit', async function(e){
-    e.preventDefault();
-    const errEl=document.getElementById('lfError'); errEl.textContent='';
-    if(!form.checkValidity()){ form.reportValidity(); errEl.textContent='Please complete all required fields.'; return; }
-    const btn=document.getElementById('lfSubmit'); btn.disabled=true; const label=btn.textContent; btn.textContent='Unlocking\u2026';
-    const fd=new FormData(form); const fields=[]; const leadObj={};
-    fd.forEach((v,k)=>{ if(v!=='' && v!=null){ fields.push({name:k,value:String(v)}); leadObj[k]=String(v); } });
-    try{
-      const res=await fetch('https://api.hsforms.com/submissions/v3/integration/submit/'+HS_PORTAL+'/'+HS_FORM,{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ fields:fields, context:{ pageUri:location.href, pageName:document.title } })
-      });
-      if(!res.ok){
-        let msg='Something went wrong. Please check your details and try again.';
-        try{ const j=await res.json(); if(j&&j.errors&&j.errors[0]&&j.errors[0].message) msg=j.errors[0].message; }catch(_){}
-        throw new Error(msg);
-      }
-      window.__lead=leadObj;
-      try{ if(window.navattic&&window.navattic.identify) window.navattic.identify({'user.email':leadObj.email,'user.fullName':((leadObj.firstname||'')+' '+(leadObj.lastname||'')).trim()}); }catch(_){}
-      if(window.revealResults) window.revealResults();
-    }catch(err){
-      errEl.textContent = err.message || 'Submission failed. Please try again.';
-      btn.disabled=false; btn.textContent=label;
-    }
   });
 })();
 
